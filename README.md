@@ -5,6 +5,13 @@
 conda activate py3.11-timemixer-raytune
 python3 download_data.py
 ```
+### Run hyperaprameter tunning experiment
+
+```{bash}
+# Inside TimeMixer-TFM repository
+. runETTh1exp.sh
+```
+
 
 <div align="center">
   <!-- <h1><b> Time-LLM </b></h1> -->

@@ -1,0 +1,1150 @@
+horizon=96
+maxconcurrent=1
+gpu_fraction=$(echo "scale=2; 1/$maxconcurrent" | bc)  # Calculate GPU fraction with 2 decimal places
+start_time=$(date +%s)  # Get the current time in seconds
+python3 tune_timemixer.py \
+    --model TimeMixer \
+    --data ETTh1 \
+    --root_path ./dataset/ETT-small/ \
+    --data_path ETTh1.csv \
+    --features M \
+    --seq_len 96 \
+    --label_len 0 \
+    --pred_len $horizon \
+    --enc_in 7 \
+    --dec_in 7 \
+    --c_out 7 \
+    --d_model 16 \
+    --d_ff 32 \
+    --down_sampling_layers 3 \
+    --down_sampling_window 2 \
+    --down_sampling_method avg \
+    --decomp_method moving_avg \
+    --moving_avg 25 \
+    --train_epochs 8 \
+    --patience 0 \
+    --num_workers 1 \
+    --gpu 0 \
+    --tune_search_algorithm bohb \
+    --tune_storage_path ./checkpoints/hptunning/bohb/ \
+    --tune_experiment_name ETTh1_96_${horizon}_test \
+    --tune_objective best_valid_loss \
+    --tune_num_samples 10 \
+    --tune_max_trial_time_s 100 \
+    --tune_time_budget_s 14400 \
+    --tune_max_concurrent $maxconcurrent \
+    --tune_gpu_resources $gpu_fraction \
+    --tune_cpu_resources 1 \
+    --tune_default_config "{
+        \"batch_size\": 128, \
+        \"learning_rate\": 0.01, \
+        \"down_sampling_method\": \"avg\", \
+        \"d_model\": 16, \
+        \"alpha_d_ff\": 2, \
+        \"decomp_method\": \"moving_avg\", \
+        \"moving_avg\": 25, \
+        \"e_layers\": 2, \
+        \"dropout\": 0.1
+    }" \
+    --tune_param_space "{
+        \"batch_size\": [\"choice\", [16, 32, 64, 128]], \
+        \"learning_rate\": [\"loguniform\", [0.0005, 0.012]], \
+        \"down_sampling_method\": [\"choice\", [\"avg\", \"conv\"]], \
+        \"d_model\": [\"choice\", [8, 16, 32, 64, 128, 256, 512]], \
+        \"alpha_d_ff\": [\"choice\", [2, 3, 4]], \
+        \"decomp_method\": [\"choice\", [[\"moving_avg\", \"moving_avg\", [15, 25, 35, 55, 75]], [\"dft_decomp\"]]], \
+        \"e_layers\": [\"choice\", [1, 2, 3, 4]], \
+        \"dropout\": [\"normal\", [0.1, 0.025]]
+    }" \
+    --tune_hb_eta 3 \
+    --tune_bohb_min_points_in_model 150 \
+    --tune_bohb_top_n_percent 15 \
+    --tune_bohb_num_samples 64 \
+    --tune_bohb_random_fraction 0.333 \
+    --tune_bohb_bandwidth_factor 3 \
+    --tune_bohb_min_bandwidth 0.001 \
+    --seed 123;
+end_time=$(date +%s)  # Get the current time in seconds
+elapsed_time=$((end_time - start_time))  # Calculate the elapsed time
+echo ""
+echo ""
+echo "Time taken ($maxconcurrent parallel trials): $elapsed_time seconds"
+echo ""
+echo ""2024-08-23 05:30:17,952	INFO worker.py:1781 -- Started a local Ray instance.
+2024-08-23 05:30:18,370	INFO tune.py:253 -- Initializing Ray automatically. For cluster usage or custom Ray initialization, call `ray.init(...)` before `Tuner(...)`.
+2024-08-23 05:30:21,594	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=35806)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-0416fe84_1_alpha_d_ff=2,batch_size=128,d_model=16,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.1000,e_layers=_2024-08-23_05-30-18/checkpoint_000000)
+2024-08-23 05:30:22,331	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=35806)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-0416fe84_1_alpha_d_ff=2,batch_size=128,d_model=16,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.1000,e_layers=_2024-08-23_05-30-18/checkpoint_000001)
+[36m(_train_fn pid=36075)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-c40271af_2_alpha_d_ff=4,batch_size=32,d_model=16,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1081,e_layers=_2024-08-23_05-30-22/checkpoint_000000)
+2024-08-23 05:30:31,836	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=36075)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-c40271af_2_alpha_d_ff=4,batch_size=32,d_model=16,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1081,e_layers=_2024-08-23_05-30-22/checkpoint_000001)
+[36m(_train_fn pid=36357)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-e132db4a_3_alpha_d_ff=3,batch_size=64,d_model=64,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.0987,e_layers=3_2024-08-23_05-30-31/checkpoint_000000)
+╭─────────────────────────────────────────────────────╮
+│ Configuration for experiment     ETTh1_96_96_test   │
+├─────────────────────────────────────────────────────┤
+│ Search algorithm                 SearchGenerator    │
+│ Scheduler                        HyperBandForBOHB   │
+│ Number of trials                 10                 │
+╰─────────────────────────────────────────────────────╯
+
+View detailed results here: /home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test
+To visualize your results with TensorBoard, run: `tensorboard --logdir /tmp/ray/session_2024-08-23_05-30-17_424838_33594/artifacts/2024-08-23_05-30-18/ETTh1_96_96_test/driver_artifacts`
+
+Trial status: 1 PENDING
+Current time: 2024-08-23 05:30:18. Total running time: 0s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+╭───────────────────────────╮
+│ Trial name       status   │
+├───────────────────────────┤
+│ trial-0416fe84   PENDING  │
+╰───────────────────────────╯
+
+Trial trial-0416fe84 started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-0416fe84 config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               2 │
+│ batch_size                             128 │
+│ d_model                                 16 │
+│ decomp_method                   moving_avg │
+│ down_sampling_method                   avg │
+│ dropout                                0.1 │
+│ e_layers                                 2 │
+│ learning_rate                         0.01 │
+│ moving_avg                              25 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=35806)[0m configuration
+[36m(_train_fn pid=35806)[0m {'batch_size': 128, 'learning_rate': 0.01, 'down_sampling_method': 'avg', 'd_model': 16, 'decomp_method': 'moving_avg', 'moving_avg': 25, 'e_layers': 2, 'dropout': 0.1, 'd_ff': 32}
+[36m(_train_fn pid=35806)[0m Use GPU: cuda:0
+[36m(_train_fn pid=35806)[0m train 8449
+[36m(_train_fn pid=35806)[0m val 2785
+[36m(_train_fn pid=35806)[0m start_epoch 0
+[36m(_train_fn pid=35806)[0m max_epoch 8
+[36m(_train_fn pid=35806)[0m Updating learning rate to 0.01
+[36m(_train_fn pid=35806)[0m saving checkpoint...
+[36m(_train_fn pid=35806)[0m Validation loss decreased (inf --> 1.0509).  Saving model state dict ...
+[36m(_train_fn pid=35806)[0m Epoch: 1 cost time: 0.8883326053619385
+[36m(_train_fn pid=35806)[0m Epoch: 1, Steps: 66 | Train Loss: 0.6187816 Vali Loss: 1.0508947 Best vali loss: 1.0508947
+[36m(_train_fn pid=35806)[0m Updating learning rate to 0.005
+[36m(_train_fn pid=35806)[0m saving checkpoint...
+[36m(_train_fn pid=35806)[0m Validation loss decreased (1.0509 --> 0.7180).  Saving model state dict ...
+
+Trial trial-c40271af started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-c40271af config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               4 │
+│ batch_size                              32 │
+│ d_model                                 16 │
+│ decomp_method                   dft_decomp │
+│ down_sampling_method                  conv │
+│ dropout                            0.10805 │
+│ e_layers                                 3 │
+│ learning_rate                      0.00231 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=36075)[0m {'batch_size': 32, 'd_model': 16, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'conv', 'dropout': 0.10805265170849054, 'e_layers': 3, 'learning_rate': 0.0023054601576715525, 'd_ff': 64}
+[36m(_train_fn pid=36075)[0m 	iters: 100, epoch: 1 | loss: 0.6100498
+[36m(_train_fn pid=36075)[0m 	speed: 0.0198s/iter; left time: 39.8766s
+[36m(_train_fn pid=36075)[0m configuration
+[36m(_train_fn pid=36075)[0m Use GPU: cuda:0
+[36m(_train_fn pid=36075)[0m train 8449
+[36m(_train_fn pid=36075)[0m val 2785
+[36m(_train_fn pid=36075)[0m start_epoch 0
+[36m(_train_fn pid=36075)[0m max_epoch 8
+[36m(_train_fn pid=36075)[0m 	iters: 200, epoch: 1 | loss: 0.4722895
+[36m(_train_fn pid=36075)[0m 	speed: 0.0116s/iter; left time: 22.2758s
+[36m(_train_fn pid=36075)[0m Updating learning rate to 0.0023054601576715525
+[36m(_train_fn pid=36075)[0m saving checkpoint...
+[36m(_train_fn pid=36075)[0m Validation loss decreased (inf --> 0.9580).  Saving model state dict ...
+[36m(_train_fn pid=36075)[0m Epoch: 1 cost time: 3.585426092147827
+[36m(_train_fn pid=36075)[0m Epoch: 1, Steps: 264 | Train Loss: 0.6133037 Vali Loss: 0.9580301 Best vali loss: 0.9580301
+[36m(_train_fn pid=36075)[0m 	iters: 100, epoch: 2 | loss: 0.3568063
+[36m(_train_fn pid=36075)[0m 	speed: 0.0226s/iter; left time: 39.5297s
+[36m(_train_fn pid=36075)[0m 	iters: 200, epoch: 2 | loss: 0.4574386
+[36m(_train_fn pid=36075)[0m 	speed: 0.0106s/iter; left time: 17.4884s
+[36m(_train_fn pid=36075)[0m Updating learning rate to 0.0011527300788357763
+[36m(_train_fn pid=36075)[0m saving checkpoint...
+[36m(_train_fn pid=36075)[0m Validation loss decreased (0.9580 --> 0.7008).  Saving model state dict ...
+
+Trial trial-e132db4a started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-e132db4a config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               3 │
+│ batch_size                              64 │
+│ d_model                                 64 │
+│ decomp_method                   moving_avg │
+│ down_sampling_method                   avg │
+│ dropout                            0.09871 │
+│ e_layers                                 3 │
+│ learning_rate                      0.00089 │
+│ moving_avg                              15 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=36357)[0m configuration
+[36m(_train_fn pid=36357)[0m {'batch_size': 64, 'd_model': 64, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.09871205697651537, 'e_layers': 3, 'learning_rate': 0.000892991124088706, 'moving_avg': 15, 'd_ff': 192}
+[36m(_train_fn pid=36357)[0m Use GPU: cuda:0
+[36m(_train_fn pid=36357)[0m train 8449
+[36m(_train_fn pid=36357)[0m val 2785
+[36m(_train_fn pid=36357)[0m start_epoch 0
+[36m(_train_fn pid=36357)[0m max_epoch 8
+[36m(_train_fn pid=36357)[0m 	iters: 100, epoch: 1 | loss: 0.6625524
+[36m(_train_fn pid=36357)[0m 	speed: 0.0229s/iter; left time: 21.8746s
+[36m(_train_fn pid=36357)[0m Updating learning rate to 0.000892991124088706
+[36m(_train_fn pid=36357)[0m saving checkpoint...
+[36m(_train_fn pid=36357)[0m Validation loss decreased (inf --> 1.1471).  Saving model state dict ...
+[36m(_train_fn pid=36357)[0m Epoch: 1 cost time: 2.548936367034912
+2024-08-23 05:30:40,245	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=36357)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-e132db4a_3_alpha_d_ff=3,batch_size=64,d_model=64,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.0987,e_layers=3_2024-08-23_05-30-31/checkpoint_000001)
+[36m(_train_fn pid=36590)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-e4635fd9_4_alpha_d_ff=3,batch_size=64,d_model=128,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1374,e_layers_2024-08-23_05-30-40/checkpoint_000000)
+2024-08-23 05:30:51,306	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=36590)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-e4635fd9_4_alpha_d_ff=3,batch_size=64,d_model=128,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1374,e_layers_2024-08-23_05-30-40/checkpoint_000001)
+2024-08-23 05:30:55,293	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=36357)[0m Epoch: 1, Steps: 132 | Train Loss: 0.6499539 Vali Loss: 1.1471066 Best vali loss: 1.1471066
+[36m(_train_fn pid=36357)[0m 	iters: 100, epoch: 2 | loss: 0.3476021
+[36m(_train_fn pid=36357)[0m 	speed: 0.0268s/iter; left time: 22.1191s
+[36m(_train_fn pid=36357)[0m Updating learning rate to 0.000446495562044353
+[36m(_train_fn pid=36357)[0m saving checkpoint...
+[36m(_train_fn pid=36357)[0m Validation loss decreased (1.1471 --> 0.7100).  Saving model state dict ...
+
+Trial trial-e4635fd9 started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-e4635fd9 config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               3 │
+│ batch_size                              64 │
+│ d_model                                128 │
+│ decomp_method                   dft_decomp │
+│ down_sampling_method                  conv │
+│ dropout                             0.1374 │
+│ e_layers                                 2 │
+│ learning_rate                      0.00158 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=36590)[0m configuration
+[36m(_train_fn pid=36590)[0m {'batch_size': 64, 'd_model': 128, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'conv', 'dropout': 0.1373956631376794, 'e_layers': 2, 'learning_rate': 0.00157875512705329, 'd_ff': 384}
+[36m(_train_fn pid=36590)[0m Use GPU: cuda:0
+[36m(_train_fn pid=36590)[0m train 8449
+[36m(_train_fn pid=36590)[0m val 2785
+[36m(_train_fn pid=36590)[0m start_epoch 0
+[36m(_train_fn pid=36590)[0m max_epoch 8
+[36m(_train_fn pid=36590)[0m 	iters: 100, epoch: 1 | loss: 0.6324797
+[36m(_train_fn pid=36590)[0m 	speed: 0.0344s/iter; left time: 32.9324s
+[36m(_train_fn pid=36590)[0m Updating learning rate to 0.00157875512705329
+[36m(_train_fn pid=36590)[0m saving checkpoint...
+[36m(_train_fn pid=36590)[0m Validation loss decreased (inf --> 1.1399).  Saving model state dict ...
+[36m(_train_fn pid=36590)[0m Epoch: 1 cost time: 3.978278636932373
+[36m(_train_fn pid=36590)[0m Epoch: 1, Steps: 132 | Train Loss: 0.6076340 Vali Loss: 1.1399003 Best vali loss: 1.1399003
+
+Trial status: 3 PAUSED | 1 RUNNING
+Current time: 2024-08-23 05:30:48. Total running time: 30s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: c40271af with best_valid_loss=0.700835952128487 and params={'batch_size': 32, 'd_model': 16, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'conv', 'dropout': 0.10805265170849054, 'e_layers': 3, 'learning_rate': 0.0023054601576715525, 'd_ff': 64}
+╭─────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status       iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├─────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-e4635fd9   RUNNING         1            4.97712       0.607634       1.1399              1.1399   │
+│ trial-0416fe84   PAUSED          2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-c40271af   PAUSED          2            7.69644       0.378611       0.700836            0.700836 │
+│ trial-e132db4a   PAUSED          2            6.04143       0.408841       0.709976            0.709976 │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[36m(_train_fn pid=36590)[0m 	iters: 100, epoch: 2 | loss: 0.3890527
+[36m(_train_fn pid=36590)[0m 	speed: 0.0410s/iter; left time: 33.8471s
+[36m(_train_fn pid=36590)[0m Updating learning rate to 0.000789377563526645
+[36m(_train_fn pid=36590)[0m saving checkpoint...
+[36m(_train_fn pid=36590)[0m Validation loss decreased (1.1399 --> 0.7108).  Saving model state dict ...
+
+Trial trial-34292379 started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-34292379 config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               2 │
+│ batch_size                              64 │
+│ d_model                                  8 │
+│ decomp_method                   moving_avg │
+│ down_sampling_method                   avg │
+│ dropout                            0.11866 │
+│ e_layers                                 2 │
+│ learning_rate                      0.00194 │
+│ moving_avg                              25 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=36827)[0m configuration
+[36m(_train_fn pid=36827)[0m {'batch_size': 64, 'd_model': 8, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.11866451479783081, 'e_layers': 2, 'learning_rate': 0.0019351104492971506, 'moving_avg': 25, 'd_ff': 16}
+[36m(_train_fn pid=36827)[0m Use GPU: cuda:0
+[36m(_train_fn pid=36827)[0m train 8449
+[36m(_train_fn pid=36827)[0m val 2785
+[36m(_train_fn pid=36827)[0m start_epoch 0
+[36m(_train_fn pid=36827)[0m max_epoch 8
+[36m(_train_fn pid=36827)[0m 	iters: 100, epoch: 1 | loss: 2.0502758
+[36m(_train_fn pid=36827)[0m 	speed: 0.0151s/iter; left time: 14.4132s
+[36m(_train_fn pid=36827)[0m Updating learning rate to 0.0019351104492971506
+[36m(_train_fn pid=36827)[0m saving checkpoint...
+[36m(_train_fn pid=36827)[0m Validation loss decreased (inf --> 2.5415).  Saving model state dict ...
+[36m(_train_fn pid=36827)[0m Epoch: 1 cost time: 1.4981818199157715
+[36m(_train_fn pid=36827)[0m Epoch: 1, Steps: 132 | Train Loss: 2.3024079 Vali Loss: 2.5414671 Best vali loss: 2.5414671
+[36m(_train_fn pid=36827)[0m 	iters: 100, epoch: 2 | loss: 0.3999449
+[36m(_train_fn pid=36827)[0m 	speed: 0.0145s/iter; left time: 12.0020s
+
+Trial trial-0416fe84 completed after 2 iterations at 2024-08-23 05:30:56. Total running time: 38s
+╭───────────────────────────────────────────────────╮
+│ Trial trial-0416fe84 result                       │
+├───────────────────────────────────────────────────┤
+│ checkpoint_dir_name             checkpoint_000001 │
+│ time_this_iter_s                          0.73121 │
+│ time_total_s                              2.18192 │
+│ training_iteration                              2 │
+│ best_valid_loss                           0.71801 │
+│ train_loss                                0.39906 │
+│ valid_loss                                0.71801 │
+╰───────────────────────────────────────────────────╯
+
+Trial trial-e4635fd9 completed after 2 iterations at 2024-08-23 05:30:56. Total running time: 38s
+2024-08-23 05:30:56,776	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=36827)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-34292379_5_alpha_d_ff=2,batch_size=64,d_model=8,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.1187,e_layers=2,_2024-08-23_05-30-51/checkpoint_000001)[32m [repeated 2x across cluster] (Ray deduplicates logs by default. Set RAY_DEDUP_LOGS=0 to disable log deduplication, or see https://docs.ray.io/en/master/ray-observability/user-guides/configure-logging.html#log-deduplication for more options.)[0m
+[36m(_train_fn pid=37061)[0m Restored on 192.168.1.139 from checkpoint: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-c40271af_2_alpha_d_ff=4,batch_size=32,d_model=16,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1081,e_layers=_2024-08-23_05-30-22/checkpoint_000001)
+[36m(_train_fn pid=37061)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-c40271af_2_alpha_d_ff=4,batch_size=32,d_model=16,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1081,e_layers=_2024-08-23_05-30-22/checkpoint_000002)
+2024-08-23 05:31:07,174	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=37061)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-c40271af_2_alpha_d_ff=4,batch_size=32,d_model=16,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1081,e_layers=_2024-08-23_05-30-22/checkpoint_000003)
+2024-08-23 05:31:10,597	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=37061)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-c40271af_2_alpha_d_ff=4,batch_size=32,d_model=16,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1081,e_layers=_2024-08-23_05-30-22/checkpoint_000004)
+2024-08-23 05:31:14,067	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=37061)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-c40271af_2_alpha_d_ff=4,batch_size=32,d_model=16,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1081,e_layers=_2024-08-23_05-30-22/checkpoint_000005)
+[36m(_train_fn pid=37457)[0m Restored on 192.168.1.139 from checkpoint: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-e132db4a_3_alpha_d_ff=3,batch_size=64,d_model=64,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.0987,e_layers=3_2024-08-23_05-30-31/checkpoint_000001)
+╭───────────────────────────────────────────────────╮
+│ Trial trial-e4635fd9 result                       │
+├───────────────────────────────────────────────────┤
+│ checkpoint_dir_name             checkpoint_000001 │
+│ time_this_iter_s                          4.16948 │
+│ time_total_s                              9.14661 │
+│ training_iteration                              2 │
+│ best_valid_loss                           0.71082 │
+│ train_loss                                0.40049 │
+│ valid_loss                                0.71082 │
+╰───────────────────────────────────────────────────╯
+
+Trial trial-34292379 completed after 2 iterations at 2024-08-23 05:30:56. Total running time: 38s
+╭───────────────────────────────────────────────────╮
+│ Trial trial-34292379 result                       │
+├───────────────────────────────────────────────────┤
+│ checkpoint_dir_name             checkpoint_000001 │
+│ time_this_iter_s                          1.47362 │
+│ time_total_s                              3.59008 │
+│ training_iteration                              2 │
+│ best_valid_loss                           0.72487 │
+│ train_loss                                0.50516 │
+│ valid_loss                                0.72487 │
+╰───────────────────────────────────────────────────╯
+[36m(_train_fn pid=36827)[0m Updating learning rate to 0.0009675552246485753
+[36m(_train_fn pid=36827)[0m saving checkpoint...
+[36m(_train_fn pid=36827)[0m Validation loss decreased (2.5415 --> 0.7249).  Saving model state dict ...
+
+Trial trial-c40271af started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-c40271af config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               4 │
+│ batch_size                              32 │
+│ d_model                                 16 │
+│ decomp_method                   dft_decomp │
+│ down_sampling_method                  conv │
+│ dropout                            0.10805 │
+│ e_layers                                 3 │
+│ learning_rate                      0.00231 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=37061)[0m {'batch_size': 32, 'd_model': 16, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'conv', 'dropout': 0.10805265170849054, 'e_layers': 3, 'learning_rate': 0.0023054601576715525, 'd_ff': 64}
+[36m(_train_fn pid=37061)[0m configuration
+[36m(_train_fn pid=37061)[0m Use GPU: cuda:0
+[36m(_train_fn pid=37061)[0m train 8449
+[36m(_train_fn pid=37061)[0m val 2785
+[36m(_train_fn pid=37061)[0m loading checkpoint...
+[36m(_train_fn pid=37061)[0m start_epoch 2
+[36m(_train_fn pid=37061)[0m max_epoch 8
+[36m(_train_fn pid=37061)[0m 	iters: 100, epoch: 3 | loss: 0.3839893
+[36m(_train_fn pid=37061)[0m 	speed: 0.0202s/iter; left time: 29.9503s
+[36m(_train_fn pid=37061)[0m 	iters: 200, epoch: 3 | loss: 0.3214321
+[36m(_train_fn pid=37061)[0m 	speed: 0.0121s/iter; left time: 16.7732s
+[36m(_train_fn pid=37061)[0m Updating learning rate to 0.0005763650394178881
+[36m(_train_fn pid=37061)[0m saving checkpoint...
+[36m(_train_fn pid=37061)[0m Validation loss decreased (0.7008 --> 0.6997).  Saving model state dict ...
+[36m(_train_fn pid=37061)[0m Epoch: 3 cost time: 3.6960737705230713
+[36m(_train_fn pid=37061)[0m Epoch: 3, Steps: 264 | Train Loss: 0.3499505 Vali Loss: 0.6997279 Best vali loss: 0.6997279
+[36m(_train_fn pid=37061)[0m 	iters: 100, epoch: 4 | loss: 0.3217504
+[36m(_train_fn pid=37061)[0m 	speed: 0.0237s/iter; left time: 28.9614s
+[36m(_train_fn pid=37061)[0m 	iters: 200, epoch: 4 | loss: 0.4369729
+[36m(_train_fn pid=37061)[0m 	speed: 0.0114s/iter; left time: 12.7255s
+[36m(_train_fn pid=37061)[0m Updating learning rate to 0.00028818251970894407
+[36m(_train_fn pid=37061)[0m saving checkpoint...
+[36m(_train_fn pid=37061)[0m Validation loss decreased (0.6997 --> 0.6917).  Saving model state dict ...
+[36m(_train_fn pid=37061)[0m Epoch: 4 cost time: 3.0435118675231934
+[36m(_train_fn pid=37061)[0m Epoch: 4, Steps: 264 | Train Loss: 0.3379670 Vali Loss: 0.6916759 Best vali loss: 0.6916759
+[36m(_train_fn pid=37061)[0m 	iters: 100, epoch: 5 | loss: 0.3147033
+[36m(_train_fn pid=37061)[0m 	speed: 0.0232s/iter; left time: 22.1635s
+[36m(_train_fn pid=37061)[0m 	iters: 200, epoch: 5 | loss: 0.4080010
+[36m(_train_fn pid=37061)[0m 	speed: 0.0112s/iter; left time: 9.6082s
+[36m(_train_fn pid=37061)[0m Updating learning rate to 0.00014409125985447203
+[36m(_train_fn pid=37061)[0m saving checkpoint...
+[36m(_train_fn pid=37061)[0m Epoch: 5 cost time: 2.987360954284668
+[36m(_train_fn pid=37061)[0m Epoch: 5, Steps: 264 | Train Loss: 0.3317906 Vali Loss: 0.6966181 Best vali loss: 0.6916759
+[36m(_train_fn pid=37061)[0m 	iters: 100, epoch: 6 | loss: 0.3013913
+[36m(_train_fn pid=37061)[0m 	speed: 0.0236s/iter; left time: 16.3831s
+[36m(_train_fn pid=37061)[0m 	iters: 200, epoch: 6 | loss: 0.3216920
+[36m(_train_fn pid=37061)[0m 	speed: 0.0112s/iter; left time: 6.6278s
+[36m(_train_fn pid=37061)[0m Updating learning rate to 7.204562992723602e-05
+[36m(_train_fn pid=37061)[0m saving checkpoint...
+
+Trial trial-e132db4a started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-e132db4a config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               3 │
+│ batch_size                              64 │
+│ d_model                                 64 │
+│ decomp_method                   moving_avg │
+│ down_sampling_method                   avg │
+│ dropout                            0.09871 │
+│ e_layers                                 3 │
+│ learning_rate                      0.00089 │
+│ moving_avg                              15 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=37457)[0m configuration
+[36m(_train_fn pid=37457)[0m {'batch_size': 64, 'd_model': 64, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.09871205697651537, 'e_layers': 3, 'learning_rate': 0.000892991124088706, 'moving_avg': 15, 'd_ff': 192}
+[36m(_train_fn pid=37457)[0m Use GPU: cuda:0
+[36m(_train_fn pid=37457)[0m train 8449
+[36m(_train_fn pid=37457)[0m val 2785
+[36m(_train_fn pid=37457)[0m loading checkpoint...
+[36m(_train_fn pid=37457)[0m start_epoch 2
+[36m(_train_fn pid=37457)[0m max_epoch 8
+
+Trial status: 3 TERMINATED | 1 PAUSED | 1 RUNNING
+Current time: 2024-08-23 05:31:18. Total running time: 1min 0s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: c40271af with best_valid_loss=0.6916758523418985 and params={'batch_size': 32, 'd_model': 16, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'conv', 'dropout': 0.10805265170849054, 'e_layers': 3, 'learning_rate': 0.0023054601576715525, 'd_ff': 64}
+[36m(_train_fn pid=37457)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-e132db4a_3_alpha_d_ff=3,batch_size=64,d_model=64,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.0987,e_layers=3_2024-08-23_05-30-31/checkpoint_000002)
+2024-08-23 05:31:22,411	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=37457)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-e132db4a_3_alpha_d_ff=3,batch_size=64,d_model=64,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.0987,e_layers=3_2024-08-23_05-30-31/checkpoint_000003)
+2024-08-23 05:31:25,120	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=37457)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-e132db4a_3_alpha_d_ff=3,batch_size=64,d_model=64,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.0987,e_layers=3_2024-08-23_05-30-31/checkpoint_000004)
+2024-08-23 05:31:27,820	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=37457)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-e132db4a_3_alpha_d_ff=3,batch_size=64,d_model=64,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.0987,e_layers=3_2024-08-23_05-30-31/checkpoint_000005)
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status         iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-e132db4a   RUNNING           2            6.04143       0.408841       0.709976            0.709976 │
+│ trial-0416fe84   TERMINATED        2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-e4635fd9   TERMINATED        2            9.14661       0.400486       0.710817            0.710817 │
+│ trial-34292379   TERMINATED        2            3.59008       0.505164       0.72487             0.72487  │
+│ trial-c40271af   PAUSED            6           22.6052        0.327938       0.698741            0.691676 │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[36m(_train_fn pid=37457)[0m 	iters: 100, epoch: 3 | loss: 0.4250576
+[36m(_train_fn pid=37457)[0m 	speed: 0.0237s/iter; left time: 16.4111s
+[36m(_train_fn pid=37457)[0m Updating learning rate to 0.0002232477810221765
+[36m(_train_fn pid=37457)[0m saving checkpoint...
+[36m(_train_fn pid=37457)[0m Validation loss decreased (0.7100 --> 0.7050).  Saving model state dict ...
+[36m(_train_fn pid=37457)[0m Epoch: 3 cost time: 2.617694616317749
+[36m(_train_fn pid=37457)[0m Epoch: 3, Steps: 132 | Train Loss: 0.3632742 Vali Loss: 0.7050281 Best vali loss: 0.7050281
+[36m(_train_fn pid=37457)[0m 	iters: 100, epoch: 4 | loss: 0.3321320
+[36m(_train_fn pid=37457)[0m 	speed: 0.0274s/iter; left time: 15.3495s
+[36m(_train_fn pid=37457)[0m Updating learning rate to 0.00011162389051108825
+[36m(_train_fn pid=37457)[0m saving checkpoint...
+[36m(_train_fn pid=37457)[0m Validation loss decreased (0.7050 --> 0.6984).  Saving model state dict ...
+[36m(_train_fn pid=37457)[0m Epoch: 4 cost time: 2.336864471435547
+[36m(_train_fn pid=37457)[0m Epoch: 4, Steps: 132 | Train Loss: 0.3570154 Vali Loss: 0.6983501 Best vali loss: 0.6983501
+[36m(_train_fn pid=37457)[0m 	iters: 100, epoch: 5 | loss: 0.2937884
+[36m(_train_fn pid=37457)[0m 	speed: 0.0271s/iter; left time: 11.6431s
+[36m(_train_fn pid=37457)[0m Updating learning rate to 5.5811945255544124e-05
+[36m(_train_fn pid=37457)[0m saving checkpoint...
+[36m(_train_fn pid=37457)[0m Validation loss decreased (0.6984 --> 0.6912).  Saving model state dict ...
+[36m(_train_fn pid=37457)[0m Epoch: 5 cost time: 2.3237147331237793
+[36m(_train_fn pid=37457)[0m Epoch: 5, Steps: 132 | Train Loss: 0.3541369 Vali Loss: 0.6911583 Best vali loss: 0.6911583
+[36m(_train_fn pid=37457)[0m 	iters: 100, epoch: 6 | loss: 0.4101260
+[36m(_train_fn pid=37457)[0m 	speed: 0.0270s/iter; left time: 8.0297s
+
+Trial trial-c40271af completed after 6 iterations at 2024-08-23 05:31:27. Total running time: 1min 9s
+╭───────────────────────────────────────────────────╮
+│ Trial trial-c40271af result                       │
+├───────────────────────────────────────────────────┤
+│ checkpoint_dir_name             checkpoint_000005 │
+│ time_this_iter_s                          3.46701 │
+│ time_total_s                             22.60521 │
+│ training_iteration                              6 │
+│ best_valid_loss                           0.69168 │
+│ train_loss                                0.32794 │
+│ valid_loss                                0.69874 │
+╰───────────────────────────────────────────────────╯
+
+Trial trial-e132db4a completed after 6 iterations at 2024-08-23 05:31:27. Total running time: 1min 9s
+╭───────────────────────────────────────────────────╮
+│ Trial trial-e132db4a result                       │
+├───────────────────────────────────────────────────┤
+│ checkpoint_dir_name             checkpoint_000005 │
+│ time_this_iter_s                          2.69521 │
+│ time_total_s                             17.62572 │
+│ training_iteration                              6 │
+│ best_valid_loss                           0.69116 │
+│ train_loss                                0.35252 │
+│ valid_loss                                0.69365 │
+╰───────────────────────────────────────────────────╯
+[36m(_train_fn pid=37457)[0m Updating learning rate to 2.7905972627772062e-05
+[36m(_train_fn pid=37457)[0m saving checkpoint...
+
+Trial trial-f6250d11 started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-f6250d11 config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               3 │
+│ batch_size                             128 │
+│ d_model                                512 │
+│ decomp_method                   dft_decomp │
+│ down_sampling_method                  conv │
+│ dropout                            0.09138 │
+│ e_layers                                 2 │
+│ learning_rate                      0.00785 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=37845)[0m configuration
+[36m(_train_fn pid=37845)[0m {'batch_size': 128, 'd_model': 512, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'conv', 'dropout': 0.09138395775177267, 'e_layers': 2, 'learning_rate': 0.007846204854903772, 'd_ff': 1536}
+[36m(_train_fn pid=37845)[0m Use GPU: cuda:0
+[36m(_train_fn pid=37845)[0m train 8449
+[36m(_train_fn pid=37845)[0m val 2785
+[36m(_train_fn pid=37845)[0m start_epoch 0
+[36m(_train_fn pid=37845)[0m max_epoch 8
+
+Trial status: 5 TERMINATED | 1 RUNNING
+Current time: 2024-08-23 05:31:48. Total running time: 1min 30s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: e132db4a with best_valid_loss=0.6911583362623702 and params={'batch_size': 64, 'd_model': 64, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.09871205697651537, 'e_layers': 3, 'learning_rate': 0.000892991124088706, 'moving_avg': 15, 'd_ff': 192}
+[36m(_train_fn pid=37845)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-f6250d11_6_alpha_d_ff=3,batch_size=128,d_model=512,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.0914,e_layer_2024-08-23_05-31-27/checkpoint_000000)
+[36m(_train_fn pid=37845)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-f6250d11_6_alpha_d_ff=3,batch_size=128,d_model=512,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.0914,e_layer_2024-08-23_05-31-27/checkpoint_000001)
+[36m(_train_fn pid=37845)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-f6250d11_6_alpha_d_ff=3,batch_size=128,d_model=512,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.0914,e_layer_2024-08-23_05-31-27/checkpoint_000002)
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status         iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-f6250d11   RUNNING                                                                                  │
+│ trial-0416fe84   TERMINATED        2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-c40271af   TERMINATED        6           22.6052        0.327938       0.698741            0.691676 │
+│ trial-e132db4a   TERMINATED        6           17.6257        0.35252        0.693646            0.691158 │
+│ trial-e4635fd9   TERMINATED        2            9.14661       0.400486       0.710817            0.710817 │
+│ trial-34292379   TERMINATED        2            3.59008       0.505164       0.72487             0.72487  │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[36m(_train_fn pid=37845)[0m Validation loss decreased (inf --> 1.1791).  Saving model state dict ...
+[36m(_train_fn pid=37845)[0m Updating learning rate to 0.007846204854903772
+[36m(_train_fn pid=37845)[0m saving checkpoint...
+[36m(_train_fn pid=37845)[0m Epoch: 1 cost time: 23.942607879638672
+[36m(_train_fn pid=37845)[0m Epoch: 1, Steps: 66 | Train Loss: 0.7753725 Vali Loss: 1.1791218 Best vali loss: 1.1791218
+Trial status: 5 TERMINATED | 1 RUNNING
+Current time: 2024-08-23 05:32:18. Total running time: 2min 0s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: e132db4a with best_valid_loss=0.6911583362623702 and params={'batch_size': 64, 'd_model': 64, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.09871205697651537, 'e_layers': 3, 'learning_rate': 0.000892991124088706, 'moving_avg': 15, 'd_ff': 192}
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status         iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-f6250d11   RUNNING           1           27.7383        0.775372       1.17912             1.17912  │
+│ trial-0416fe84   TERMINATED        2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-c40271af   TERMINATED        6           22.6052        0.327938       0.698741            0.691676 │
+│ trial-e132db4a   TERMINATED        6           17.6257        0.35252        0.693646            0.691158 │
+│ trial-e4635fd9   TERMINATED        2            9.14661       0.400486       0.710817            0.710817 │
+│ trial-34292379   TERMINATED        2            3.59008       0.505164       0.72487             0.72487  │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[36m(_train_fn pid=37845)[0m Updating learning rate to 0.003923102427451886
+[36m(_train_fn pid=37845)[0m saving checkpoint...
+[36m(_train_fn pid=37845)[0m Epoch: 2 cost time: 22.771591901779175
+[36m(_train_fn pid=37845)[0m Epoch: 2, Steps: 66 | Train Loss: 1394.7854305 Vali Loss: 131.1559161 Best vali loss: 1.1791218
+Trial status: 5 TERMINATED | 1 RUNNING
+Current time: 2024-08-23 05:32:48. Total running time: 2min 30s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: e132db4a with best_valid_loss=0.6911583362623702 and params={'batch_size': 64, 'd_model': 64, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.09871205697651537, 'e_layers': 3, 'learning_rate': 0.000892991124088706, 'moving_avg': 15, 'd_ff': 192}
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status         iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-f6250d11   RUNNING           2           53.7577     1394.79         131.156               1.17912  │
+│ trial-0416fe84   TERMINATED        2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-c40271af   TERMINATED        6           22.6052        0.327938       0.698741            0.691676 │
+│ trial-e132db4a   TERMINATED        6           17.6257        0.35252        0.693646            0.691158 │
+│ trial-e4635fd9   TERMINATED        2            9.14661       0.400486       0.710817            0.710817 │
+│ trial-34292379   TERMINATED        2            3.59008       0.505164       0.72487             0.72487  │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[36m(_train_fn pid=37845)[0m Updating learning rate to 0.001961551213725943
+[36m(_train_fn pid=37845)[0m saving checkpoint...
+[36m(_train_fn pid=37845)[0m Epoch: 3 cost time: 22.690047025680542
+[36m(_train_fn pid=37845)[0m Epoch: 3, Steps: 66 | Train Loss: 25.4426099 Vali Loss: 4.8493550 Best vali loss: 1.1791218
+[36m(_train_fn pid=37845)[0m Updating learning rate to 0.0009807756068629715
+[36m(_train_fn pid=37845)[0m saving checkpoint...
+
+Trial trial-f6250d11 completed after 4 iterations at 2024-08-23 05:33:16. Total running time: 2min 57s
+[36m(_train_fn pid=37845)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-f6250d11_6_alpha_d_ff=3,batch_size=128,d_model=512,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.0914,e_layer_2024-08-23_05-31-27/checkpoint_000003)
+[36m(_train_fn pid=38388)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-a98c871b_7_alpha_d_ff=3,batch_size=128,d_model=64,decomp_method=dft_decomp,down_sampling_method=avg,dropout=0.0819,e_layers=_2024-08-23_05-33-16/checkpoint_000000)
+2024-08-23 05:33:27,937	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=38388)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-a98c871b_7_alpha_d_ff=3,batch_size=128,d_model=64,decomp_method=dft_decomp,down_sampling_method=avg,dropout=0.0819,e_layers=_2024-08-23_05-33-16/checkpoint_000001)
+2024-08-23 05:33:31,787	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=38388)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-a98c871b_7_alpha_d_ff=3,batch_size=128,d_model=64,decomp_method=dft_decomp,down_sampling_method=avg,dropout=0.0819,e_layers=_2024-08-23_05-33-16/checkpoint_000002)
+2024-08-23 05:33:35,602	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=38388)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-a98c871b_7_alpha_d_ff=3,batch_size=128,d_model=64,decomp_method=dft_decomp,down_sampling_method=avg,dropout=0.0819,e_layers=_2024-08-23_05-33-16/checkpoint_000003)
+2024-08-23 05:33:39,375	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=38388)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-a98c871b_7_alpha_d_ff=3,batch_size=128,d_model=64,decomp_method=dft_decomp,down_sampling_method=avg,dropout=0.0819,e_layers=_2024-08-23_05-33-16/checkpoint_000004)
+2024-08-23 05:33:43,188	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=38388)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-a98c871b_7_alpha_d_ff=3,batch_size=128,d_model=64,decomp_method=dft_decomp,down_sampling_method=avg,dropout=0.0819,e_layers=_2024-08-23_05-33-16/checkpoint_000005)
+╭───────────────────────────────────────────────────╮
+│ Trial trial-f6250d11 result                       │
+├───────────────────────────────────────────────────┤
+│ checkpoint_dir_name             checkpoint_000003 │
+│ time_this_iter_s                         26.44727 │
+│ time_total_s                            106.16131 │
+│ training_iteration                              4 │
+│ best_valid_loss                           1.17912 │
+│ train_loss                                1.71522 │
+│ valid_loss                                 2.4258 │
+╰───────────────────────────────────────────────────╯
+
+Trial status: 6 TERMINATED | 1 PENDING
+Current time: 2024-08-23 05:33:18. Total running time: 3min 0s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: e132db4a with best_valid_loss=0.6911583362623702 and params={'batch_size': 64, 'd_model': 64, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.09871205697651537, 'e_layers': 3, 'learning_rate': 0.000892991124088706, 'moving_avg': 15, 'd_ff': 192}
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status         iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-0416fe84   TERMINATED        2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-c40271af   TERMINATED        6           22.6052        0.327938       0.698741            0.691676 │
+│ trial-e132db4a   TERMINATED        6           17.6257        0.35252        0.693646            0.691158 │
+│ trial-e4635fd9   TERMINATED        2            9.14661       0.400486       0.710817            0.710817 │
+│ trial-34292379   TERMINATED        2            3.59008       0.505164       0.72487             0.72487  │
+│ trial-f6250d11   TERMINATED        4          106.161         1.71522        2.4258              1.17912  │
+│ trial-a98c871b   PENDING                                                                                  │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+Trial trial-a98c871b started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-a98c871b config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               3 │
+│ batch_size                             128 │
+│ d_model                                 64 │
+│ decomp_method                   dft_decomp │
+│ down_sampling_method                   avg │
+│ dropout                            0.08187 │
+│ e_layers                                 4 │
+│ learning_rate                       0.0034 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=38388)[0m configuration
+[36m(_train_fn pid=38388)[0m {'batch_size': 128, 'd_model': 64, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'avg', 'dropout': 0.0818741926999945, 'e_layers': 4, 'learning_rate': 0.0033987590186018305, 'd_ff': 192}
+[36m(_train_fn pid=38388)[0m Use GPU: cuda:0
+[36m(_train_fn pid=38388)[0m train 8449
+[36m(_train_fn pid=38388)[0m val 2785
+[36m(_train_fn pid=38388)[0m start_epoch 0
+[36m(_train_fn pid=38388)[0m max_epoch 8
+[36m(_train_fn pid=38388)[0m Validation loss decreased (inf --> 1.1717).  Saving model state dict ...
+[36m(_train_fn pid=38388)[0m Epoch: 1 cost time: 3.8109536170959473
+[36m(_train_fn pid=38388)[0m Epoch: 1, Steps: 66 | Train Loss: 0.6510630 Vali Loss: 1.1717168 Best vali loss: 1.1717168
+[36m(_train_fn pid=38388)[0m Updating learning rate to 0.0033987590186018305
+[36m(_train_fn pid=38388)[0m saving checkpoint...
+[36m(_train_fn pid=38388)[0m Updating learning rate to 0.0016993795093009152
+[36m(_train_fn pid=38388)[0m saving checkpoint...
+[36m(_train_fn pid=38388)[0m Validation loss decreased (1.1717 --> 0.7248).  Saving model state dict ...
+[36m(_train_fn pid=38388)[0m Epoch: 2 cost time: 3.2540500164031982
+[36m(_train_fn pid=38388)[0m Epoch: 2, Steps: 66 | Train Loss: 0.4215853 Vali Loss: 0.7247871 Best vali loss: 0.7247871
+[36m(_train_fn pid=38388)[0m Updating learning rate to 0.0008496897546504576
+[36m(_train_fn pid=38388)[0m saving checkpoint...
+[36m(_train_fn pid=38388)[0m Validation loss decreased (0.7248 --> 0.7115).  Saving model state dict ...
+[36m(_train_fn pid=38388)[0m Epoch: 3 cost time: 3.277709722518921
+[36m(_train_fn pid=38388)[0m Epoch: 3, Steps: 66 | Train Loss: 0.3672537 Vali Loss: 0.7115159 Best vali loss: 0.7115159
+[36m(_train_fn pid=38388)[0m Updating learning rate to 0.0004248448773252288
+[36m(_train_fn pid=38388)[0m saving checkpoint...
+[36m(_train_fn pid=38388)[0m Validation loss decreased (0.7115 --> 0.6991).  Saving model state dict ...
+[36m(_train_fn pid=38388)[0m Epoch: 4 cost time: 3.249427080154419
+[36m(_train_fn pid=38388)[0m Epoch: 4, Steps: 66 | Train Loss: 0.3594633 Vali Loss: 0.6991244 Best vali loss: 0.6991244
+[36m(_train_fn pid=38388)[0m Updating learning rate to 0.0002124224386626144
+[36m(_train_fn pid=38388)[0m saving checkpoint...
+[36m(_train_fn pid=38388)[0m Validation loss decreased (0.6991 --> 0.6956).  Saving model state dict ...
+[36m(_train_fn pid=38388)[0m Epoch: 5 cost time: 3.2102231979370117
+[36m(_train_fn pid=38388)[0m Epoch: 5, Steps: 66 | Train Loss: 0.3556010 Vali Loss: 0.6956237 Best vali loss: 0.6956237
+[36m(_train_fn pid=38388)[0m Updating learning rate to 0.0001062112193313072
+[36m(_train_fn pid=38388)[0m saving checkpoint...
+
+Trial trial-b15a263a started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-b15a263a config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               3 │
+│ batch_size                              32 │
+│ d_model                                 32 │
+│ decomp_method                   dft_decomp │
+│ down_sampling_method                  conv │
+│ dropout                            0.15189 │
+│ e_layers                                 3 │
+│ learning_rate                      0.00364 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=39831)[0m configuration
+[36m(_train_fn pid=39831)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-b15a263a_8_alpha_d_ff=3,batch_size=32,d_model=32,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1519,e_layers=_2024-08-23_05-33-43/checkpoint_000000)
+[36m(_train_fn pid=39831)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-b15a263a_8_alpha_d_ff=3,batch_size=32,d_model=32,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1519,e_layers=_2024-08-23_05-33-43/checkpoint_000001)
+2024-08-23 05:33:53,519	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+2024-08-23 05:33:56,987	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=39831)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-b15a263a_8_alpha_d_ff=3,batch_size=32,d_model=32,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1519,e_layers=_2024-08-23_05-33-43/checkpoint_000002)
+2024-08-23 05:34:00,419	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=39831)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-b15a263a_8_alpha_d_ff=3,batch_size=32,d_model=32,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1519,e_layers=_2024-08-23_05-33-43/checkpoint_000003)
+2024-08-23 05:34:03,914	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=39831)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-b15a263a_8_alpha_d_ff=3,batch_size=32,d_model=32,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1519,e_layers=_2024-08-23_05-33-43/checkpoint_000004)
+[36m(_train_fn pid=39831)[0m {'batch_size': 32, 'd_model': 32, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'conv', 'dropout': 0.15188648386064882, 'e_layers': 3, 'learning_rate': 0.003643081129953786, 'd_ff': 96}
+[36m(_train_fn pid=39831)[0m Use GPU: cuda:0
+[36m(_train_fn pid=39831)[0m train 8449
+[36m(_train_fn pid=39831)[0m val 2785
+[36m(_train_fn pid=39831)[0m start_epoch 0
+[36m(_train_fn pid=39831)[0m max_epoch 8
+[36m(_train_fn pid=39831)[0m 	iters: 100, epoch: 1 | loss: 0.5823302
+[36m(_train_fn pid=39831)[0m 	speed: 0.0203s/iter; left time: 40.8207s
+[36m(_train_fn pid=39831)[0m 	iters: 200, epoch: 1 | loss: 0.4092372
+[36m(_train_fn pid=39831)[0m 	speed: 0.0114s/iter; left time: 21.7412s
+
+Trial status: 6 TERMINATED | 1 PAUSED | 1 RUNNING
+Current time: 2024-08-23 05:33:48. Total running time: 3min 30s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: e132db4a with best_valid_loss=0.6911583362623702 and params={'batch_size': 64, 'd_model': 64, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.09871205697651537, 'e_layers': 3, 'learning_rate': 0.000892991124088706, 'moving_avg': 15, 'd_ff': 192}
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status         iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-b15a263a   RUNNING                                                                                  │
+│ trial-0416fe84   TERMINATED        2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-c40271af   TERMINATED        6           22.6052        0.327938       0.698741            0.691676 │
+│ trial-e132db4a   TERMINATED        6           17.6257        0.35252        0.693646            0.691158 │
+│ trial-e4635fd9   TERMINATED        2            9.14661       0.400486       0.710817            0.710817 │
+│ trial-34292379   TERMINATED        2            3.59008       0.505164       0.72487             0.72487  │
+│ trial-f6250d11   TERMINATED        4          106.161         1.71522        2.4258              1.17912  │
+│ trial-a98c871b   PAUSED            6           23.8882        0.353166       0.700033            0.695624 │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[36m(_train_fn pid=39831)[0m Updating learning rate to 0.003643081129953786
+[36m(_train_fn pid=39831)[0m saving checkpoint...
+[36m(_train_fn pid=39831)[0m Validation loss decreased (inf --> 0.8224).  Saving model state dict ...
+[36m(_train_fn pid=39831)[0m Epoch: 1 cost time: 3.5793631076812744
+[36m(_train_fn pid=39831)[0m Epoch: 1, Steps: 264 | Train Loss: 0.5238524 Vali Loss: 0.8224068 Best vali loss: 0.8224068
+[36m(_train_fn pid=39831)[0m 	iters: 100, epoch: 2 | loss: 0.3615478
+[36m(_train_fn pid=39831)[0m 	speed: 0.0246s/iter; left time: 43.0235s
+[36m(_train_fn pid=39831)[0m 	iters: 200, epoch: 2 | loss: 0.3055323
+[36m(_train_fn pid=39831)[0m 	speed: 0.0126s/iter; left time: 20.7333s
+[36m(_train_fn pid=39831)[0m Updating learning rate to 0.001821540564976893
+[36m(_train_fn pid=39831)[0m saving checkpoint...
+[36m(_train_fn pid=39831)[0m Validation loss decreased (0.8224 --> 0.7053).  Saving model state dict ...
+[36m(_train_fn pid=39831)[0m Epoch: 2 cost time: 3.360942840576172
+[36m(_train_fn pid=39831)[0m Epoch: 2, Steps: 264 | Train Loss: 0.3714561 Vali Loss: 0.7052797 Best vali loss: 0.7052797
+[36m(_train_fn pid=39831)[0m 	iters: 100, epoch: 3 | loss: 0.2757862
+[36m(_train_fn pid=39831)[0m 	speed: 0.0242s/iter; left time: 35.9920s
+[36m(_train_fn pid=39831)[0m 	iters: 200, epoch: 3 | loss: 0.3099498
+[36m(_train_fn pid=39831)[0m 	speed: 0.0112s/iter; left time: 15.5359s
+[36m(_train_fn pid=39831)[0m Updating learning rate to 0.0009107702824884465
+[36m(_train_fn pid=39831)[0m saving checkpoint...
+[36m(_train_fn pid=39831)[0m Validation loss decreased (0.7053 --> 0.6885).  Saving model state dict ...
+[36m(_train_fn pid=39831)[0m Epoch: 3 cost time: 3.0238027572631836
+[36m(_train_fn pid=39831)[0m Epoch: 3, Steps: 264 | Train Loss: 0.3453467 Vali Loss: 0.6884931 Best vali loss: 0.6884931
+[36m(_train_fn pid=39831)[0m 	iters: 100, epoch: 4 | loss: 0.3060075
+[36m(_train_fn pid=39831)[0m 	speed: 0.0233s/iter; left time: 28.4451s
+[36m(_train_fn pid=39831)[0m 	iters: 200, epoch: 4 | loss: 0.2887516
+[36m(_train_fn pid=39831)[0m 	speed: 0.0111s/iter; left time: 12.4344s
+[36m(_train_fn pid=39831)[0m Updating learning rate to 0.00045538514124422323
+[36m(_train_fn pid=39831)[0m saving checkpoint...
+[36m(_train_fn pid=39831)[0m Epoch: 4 cost time: 2.987705945968628
+[36m(_train_fn pid=39831)[0m Epoch: 4, Steps: 264 | Train Loss: 0.3310557 Vali Loss: 0.6927068 Best vali loss: 0.6884931
+[36m(_train_fn pid=39831)[0m 	iters: 100, epoch: 5 | loss: 0.3314953
+[36m(_train_fn pid=39831)[0m 	speed: 0.0237s/iter; left time: 22.6982s
+[36m(_train_fn pid=39831)[0m 	iters: 200, epoch: 5 | loss: 0.3479410
+[36m(_train_fn pid=39831)[0m 	speed: 0.0114s/iter; left time: 9.7440s
+[36m(_train_fn pid=39831)[0m Updating learning rate to 0.00022769257062211162
+[36m(_train_fn pid=39831)[0m saving checkpoint...
+[36m(_train_fn pid=39831)[0m Epoch: 5 cost time: 3.062079668045044
+[36m(_train_fn pid=39831)[0m Epoch: 5, Steps: 264 | Train Loss: 0.3208997 Vali Loss: 0.7067414 Best vali loss: 0.6884931
+[36m(_train_fn pid=39831)[0m 	iters: 100, epoch: 6 | loss: 0.2894587
+[36m(_train_fn pid=39831)[0m 	speed: 0.0233s/iter; left time: 16.1592s
+[36m(_train_fn pid=39831)[0m 	iters: 200, epoch: 6 | loss: 0.3225080
+[36m(_train_fn pid=39831)[0m 	speed: 0.0114s/iter; left time: 6.7503s
+
+Trial trial-a98c871b completed after 6 iterations at 2024-08-23 05:34:07. Total running time: 3min 49s
+╭───────────────────────────────────────────────────╮
+│ Trial trial-a98c871b result                       │
+├───────────────────────────────────────────────────┤
+│ checkpoint_dir_name             checkpoint_000005 │
+│ time_this_iter_s                          3.80615 │
+│ time_total_s                             23.88822 │
+│ training_iteration                              6 │
+│ best_valid_loss                           0.69562 │
+│ train_loss                                0.35317 │
+│ valid_loss                                0.70003 │
+╰───────────────────────────────────────────────────╯
+
+Trial trial-b15a263a completed after 6 iterations at 2024-08-23 05:34:07. Total running time: 3min 49s
+2024-08-23 05:34:07,402	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=39831)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-b15a263a_8_alpha_d_ff=3,batch_size=32,d_model=32,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.1519,e_layers=_2024-08-23_05-33-43/checkpoint_000005)
+2024-08-23 05:34:29,726	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=40492)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-d1c9875a_9_alpha_d_ff=4,batch_size=16,d_model=256,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.1032,e_layers=_2024-08-23_05-34-07/checkpoint_000000)
+[36m(_train_fn pid=40492)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-d1c9875a_9_alpha_d_ff=4,batch_size=16,d_model=256,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.1032,e_layers=_2024-08-23_05-34-07/checkpoint_000001)
+╭───────────────────────────────────────────────────╮
+│ Trial trial-b15a263a result                       │
+├───────────────────────────────────────────────────┤
+│ checkpoint_dir_name             checkpoint_000005 │
+│ time_this_iter_s                          3.47801 │
+│ time_total_s                             22.13291 │
+│ training_iteration                              6 │
+│ best_valid_loss                           0.68849 │
+│ train_loss                                0.31428 │
+│ valid_loss                                0.70926 │
+╰───────────────────────────────────────────────────╯
+[36m(_train_fn pid=39831)[0m Updating learning rate to 0.00011384628531105581
+[36m(_train_fn pid=39831)[0m saving checkpoint...
+
+Trial trial-d1c9875a started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-d1c9875a config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               4 │
+│ batch_size                              16 │
+│ d_model                                256 │
+│ decomp_method                   moving_avg │
+│ down_sampling_method                   avg │
+│ dropout                            0.10319 │
+│ e_layers                                 3 │
+│ learning_rate                      0.00068 │
+│ moving_avg                              75 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=40492)[0m configuration
+[36m(_train_fn pid=40492)[0m {'batch_size': 16, 'd_model': 256, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.1031939422525546, 'e_layers': 3, 'learning_rate': 0.0006777561947145852, 'moving_avg': 75, 'd_ff': 1024}
+[36m(_train_fn pid=40492)[0m Use GPU: cuda:0
+[36m(_train_fn pid=40492)[0m train 8449
+[36m(_train_fn pid=40492)[0m val 2785
+[36m(_train_fn pid=40492)[0m start_epoch 0
+[36m(_train_fn pid=40492)[0m max_epoch 8
+[36m(_train_fn pid=40492)[0m 	iters: 100, epoch: 1 | loss: 0.5844831
+[36m(_train_fn pid=40492)[0m 	speed: 0.0381s/iter; left time: 157.1625s
+[36m(_train_fn pid=40492)[0m 	iters: 200, epoch: 1 | loss: 0.5097508
+[36m(_train_fn pid=40492)[0m 	speed: 0.0319s/iter; left time: 128.3237s
+
+Trial status: 8 TERMINATED | 1 RUNNING
+Current time: 2024-08-23 05:34:18. Total running time: 4min 0s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: b15a263a with best_valid_loss=0.688493123342251 and params={'batch_size': 32, 'd_model': 32, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'conv', 'dropout': 0.15188648386064882, 'e_layers': 3, 'learning_rate': 0.003643081129953786, 'd_ff': 96}
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status         iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-d1c9875a   RUNNING                                                                                  │
+│ trial-0416fe84   TERMINATED        2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-c40271af   TERMINATED        6           22.6052        0.327938       0.698741            0.691676 │
+│ trial-e132db4a   TERMINATED        6           17.6257        0.35252        0.693646            0.691158 │
+│ trial-e4635fd9   TERMINATED        2            9.14661       0.400486       0.710817            0.710817 │
+│ trial-34292379   TERMINATED        2            3.59008       0.505164       0.72487             0.72487  │
+│ trial-f6250d11   TERMINATED        4          106.161         1.71522        2.4258              1.17912  │
+│ trial-a98c871b   TERMINATED        6           23.8882        0.353166       0.700033            0.695624 │
+│ trial-b15a263a   TERMINATED        6           22.1329        0.314282       0.709264            0.688493 │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[36m(_train_fn pid=40492)[0m 	iters: 300, epoch: 1 | loss: 0.4671035
+[36m(_train_fn pid=40492)[0m 	speed: 0.0310s/iter; left time: 121.8466s
+[36m(_train_fn pid=40492)[0m 	iters: 400, epoch: 1 | loss: 0.5100750
+[36m(_train_fn pid=40492)[0m 	speed: 0.0308s/iter; left time: 117.8311s
+[36m(_train_fn pid=40492)[0m 	iters: 500, epoch: 1 | loss: 0.5345711
+[36m(_train_fn pid=40492)[0m 	speed: 0.0317s/iter; left time: 118.2212s
+[36m(_train_fn pid=40492)[0m Updating learning rate to 0.0006777561947145852
+[36m(_train_fn pid=40492)[0m saving checkpoint...
+[36m(_train_fn pid=40492)[0m Validation loss decreased (inf --> 0.9216).  Saving model state dict ...
+[36m(_train_fn pid=40492)[0m Epoch: 1 cost time: 16.913941860198975
+[36m(_train_fn pid=40492)[0m Epoch: 1, Steps: 528 | Train Loss: 0.5947430 Vali Loss: 0.9216296 Best vali loss: 0.9216296
+[36m(_train_fn pid=40492)[0m 	iters: 100, epoch: 2 | loss: 0.4213852
+[36m(_train_fn pid=40492)[0m 	speed: 0.0622s/iter; left time: 223.7247s
+[36m(_train_fn pid=40492)[0m 	iters: 200, epoch: 2 | loss: 0.3935506
+[36m(_train_fn pid=40492)[0m 	speed: 0.0318s/iter; left time: 111.3220s
+[36m(_train_fn pid=40492)[0m 	iters: 300, epoch: 2 | loss: 0.4122412
+[36m(_train_fn pid=40492)[0m 	speed: 0.0319s/iter; left time: 108.3962s
+[36m(_train_fn pid=40492)[0m 	iters: 400, epoch: 2 | loss: 0.3429659
+[36m(_train_fn pid=40492)[0m 	speed: 0.0313s/iter; left time: 103.2321s
+[36m(_train_fn pid=40492)[0m 	iters: 500, epoch: 2 | loss: 0.4806866
+[36m(_train_fn pid=40492)[0m 	speed: 0.0308s/iter; left time: 98.4120s
+[36m(_train_fn pid=40492)[0m Updating learning rate to 0.0003388780973572926
+[36m(_train_fn pid=40492)[0m saving checkpoint...
+[36m(_train_fn pid=40492)[0m Validation loss decreased (0.9216 --> 0.7080).  Saving model state dict ...
+[36m(_train_fn pid=40492)[0m Epoch: 2 cost time: 16.683725357055664
+[36m(_train_fn pid=40492)[0m Epoch: 2, Steps: 528 | Train Loss: 0.3807891 Vali Loss: 0.7080322 Best vali loss: 0.7080322
+Trial status: 8 TERMINATED | 1 RUNNING
+Current time: 2024-08-23 05:34:49. Total running time: 4min 30s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: b15a263a with best_valid_loss=0.688493123342251 and params={'batch_size': 32, 'd_model': 32, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'conv', 'dropout': 0.15188648386064882, 'e_layers': 3, 'learning_rate': 0.003643081129953786, 'd_ff': 96}
+[36m(_train_fn pid=40492)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-d1c9875a_9_alpha_d_ff=4,batch_size=16,d_model=256,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.1032,e_layers=_2024-08-23_05-34-07/checkpoint_000002)
+[36m(_train_fn pid=40492)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-d1c9875a_9_alpha_d_ff=4,batch_size=16,d_model=256,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.1032,e_layers=_2024-08-23_05-34-07/checkpoint_000003)
+[36m(_train_fn pid=40492)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-d1c9875a_9_alpha_d_ff=4,batch_size=16,d_model=256,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.1032,e_layers=_2024-08-23_05-34-07/checkpoint_000004)
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status         iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-d1c9875a   RUNNING           2           38.2503        0.380789       0.708032            0.708032 │
+│ trial-0416fe84   TERMINATED        2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-c40271af   TERMINATED        6           22.6052        0.327938       0.698741            0.691676 │
+│ trial-e132db4a   TERMINATED        6           17.6257        0.35252        0.693646            0.691158 │
+│ trial-e4635fd9   TERMINATED        2            9.14661       0.400486       0.710817            0.710817 │
+│ trial-34292379   TERMINATED        2            3.59008       0.505164       0.72487             0.72487  │
+│ trial-f6250d11   TERMINATED        4          106.161         1.71522        2.4258              1.17912  │
+│ trial-a98c871b   TERMINATED        6           23.8882        0.353166       0.700033            0.695624 │
+│ trial-b15a263a   TERMINATED        6           22.1329        0.314282       0.709264            0.688493 │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[36m(_train_fn pid=40492)[0m 	iters: 100, epoch: 3 | loss: 0.3567242
+[36m(_train_fn pid=40492)[0m 	speed: 0.0613s/iter; left time: 188.1351s
+[36m(_train_fn pid=40492)[0m 	iters: 200, epoch: 3 | loss: 0.3679386
+[36m(_train_fn pid=40492)[0m 	speed: 0.0312s/iter; left time: 92.7766s
+[36m(_train_fn pid=40492)[0m 	iters: 300, epoch: 3 | loss: 0.3245396
+[36m(_train_fn pid=40492)[0m 	speed: 0.0310s/iter; left time: 88.9530s
+[36m(_train_fn pid=40492)[0m 	iters: 400, epoch: 3 | loss: 0.3473721
+[36m(_train_fn pid=40492)[0m 	speed: 0.0312s/iter; left time: 86.3549s
+[36m(_train_fn pid=40492)[0m 	iters: 500, epoch: 3 | loss: 0.3094723
+[36m(_train_fn pid=40492)[0m 	speed: 0.0309s/iter; left time: 82.4924s
+[36m(_train_fn pid=40492)[0m Updating learning rate to 0.0001694390486786463
+[36m(_train_fn pid=40492)[0m saving checkpoint...
+[36m(_train_fn pid=40492)[0m Validation loss decreased (0.7080 --> 0.6956).  Saving model state dict ...
+[36m(_train_fn pid=40492)[0m Epoch: 3 cost time: 16.460204601287842
+[36m(_train_fn pid=40492)[0m Epoch: 3, Steps: 528 | Train Loss: 0.3597432 Vali Loss: 0.6955709 Best vali loss: 0.6955709
+[36m(_train_fn pid=40492)[0m 	iters: 100, epoch: 4 | loss: 0.3463947
+[36m(_train_fn pid=40492)[0m 	speed: 0.0613s/iter; left time: 155.7152s
+[36m(_train_fn pid=40492)[0m 	iters: 200, epoch: 4 | loss: 0.3828813
+[36m(_train_fn pid=40492)[0m 	speed: 0.0316s/iter; left time: 77.2012s
+[36m(_train_fn pid=40492)[0m 	iters: 300, epoch: 4 | loss: 0.4040558
+[36m(_train_fn pid=40492)[0m 	speed: 0.0321s/iter; left time: 75.0690s
+Trial status: 8 TERMINATED | 1 RUNNING
+Current time: 2024-08-23 05:35:19. Total running time: 5min 0s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: b15a263a with best_valid_loss=0.688493123342251 and params={'batch_size': 32, 'd_model': 32, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'conv', 'dropout': 0.15188648386064882, 'e_layers': 3, 'learning_rate': 0.003643081129953786, 'd_ff': 96}
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status         iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-d1c9875a   RUNNING           3           56.7976        0.359743       0.695571            0.695571 │
+│ trial-0416fe84   TERMINATED        2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-c40271af   TERMINATED        6           22.6052        0.327938       0.698741            0.691676 │
+│ trial-e132db4a   TERMINATED        6           17.6257        0.35252        0.693646            0.691158 │
+│ trial-e4635fd9   TERMINATED        2            9.14661       0.400486       0.710817            0.710817 │
+│ trial-34292379   TERMINATED        2            3.59008       0.505164       0.72487             0.72487  │
+│ trial-f6250d11   TERMINATED        4          106.161         1.71522        2.4258              1.17912  │
+│ trial-a98c871b   TERMINATED        6           23.8882        0.353166       0.700033            0.695624 │
+│ trial-b15a263a   TERMINATED        6           22.1329        0.314282       0.709264            0.688493 │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[36m(_train_fn pid=40492)[0m 	iters: 400, epoch: 4 | loss: 0.2887249
+[36m(_train_fn pid=40492)[0m 	speed: 0.0317s/iter; left time: 70.9664s
+[36m(_train_fn pid=40492)[0m 	iters: 500, epoch: 4 | loss: 0.3493426
+[36m(_train_fn pid=40492)[0m 	speed: 0.0312s/iter; left time: 66.8252s
+[36m(_train_fn pid=40492)[0m Updating learning rate to 8.471952433932315e-05
+[36m(_train_fn pid=40492)[0m saving checkpoint...
+[36m(_train_fn pid=40492)[0m Validation loss decreased (0.6956 --> 0.6890).  Saving model state dict ...
+[36m(_train_fn pid=40492)[0m Epoch: 4 cost time: 16.73158097267151
+[36m(_train_fn pid=40492)[0m Epoch: 4, Steps: 528 | Train Loss: 0.3517461 Vali Loss: 0.6889709 Best vali loss: 0.6889709
+[36m(_train_fn pid=40492)[0m 	iters: 100, epoch: 5 | loss: 0.2853508
+[36m(_train_fn pid=40492)[0m 	speed: 0.0623s/iter; left time: 125.4436s
+[36m(_train_fn pid=40492)[0m 	iters: 200, epoch: 5 | loss: 0.3377908
+[36m(_train_fn pid=40492)[0m 	speed: 0.0312s/iter; left time: 59.5977s
+[36m(_train_fn pid=40492)[0m 	iters: 300, epoch: 5 | loss: 0.3568981
+[36m(_train_fn pid=40492)[0m 	speed: 0.0314s/iter; left time: 57.0174s
+[36m(_train_fn pid=40492)[0m 	iters: 400, epoch: 5 | loss: 0.3600089
+[36m(_train_fn pid=40492)[0m 	speed: 0.0313s/iter; left time: 53.7017s
+[36m(_train_fn pid=40492)[0m 	iters: 500, epoch: 5 | loss: 0.3118772
+[36m(_train_fn pid=40492)[0m 	speed: 0.0320s/iter; left time: 51.5789s
+[36m(_train_fn pid=40492)[0m Updating learning rate to 4.235976216966158e-05
+[36m(_train_fn pid=40492)[0m saving checkpoint...
+[36m(_train_fn pid=40492)[0m Validation loss decreased (0.6890 --> 0.6859).  Saving model state dict ...
+[36m(_train_fn pid=40492)[0m Epoch: 5 cost time: 16.643532514572144
+[36m(_train_fn pid=40492)[0m Epoch: 5, Steps: 528 | Train Loss: 0.3476301 Vali Loss: 0.6859459 Best vali loss: 0.6859459
+[36m(_train_fn pid=40492)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-d1c9875a_9_alpha_d_ff=4,batch_size=16,d_model=256,decomp_method=moving_avg,down_sampling_method=avg,dropout=0.1032,e_layers=_2024-08-23_05-34-07/checkpoint_000005)
+2024-08-23 05:36:08,069	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+2024-08-23 05:36:09,817	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=41288)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-cc658056_10_alpha_d_ff=3,batch_size=64,d_model=8,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.0941,e_layers=_2024-08-23_05-36-03/checkpoint_000001)[32m [repeated 2x across cluster][0m
+2024-08-23 05:36:11,752	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+2024-08-23 05:36:13,533	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=40492)[0m 	iters: 100, epoch: 6 | loss: 0.2899534
+[36m(_train_fn pid=40492)[0m 	speed: 0.0608s/iter; left time: 90.2601s
+Trial status: 8 TERMINATED | 1 RUNNING
+Current time: 2024-08-23 05:35:49. Total running time: 5min 30s
+Logical resource usage: 1.0/32 CPUs, 1.0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: d1c9875a with best_valid_loss=0.6859459355901713 and params={'batch_size': 16, 'd_model': 256, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.1031939422525546, 'e_layers': 3, 'learning_rate': 0.0006777561947145852, 'moving_avg': 75, 'd_ff': 1024}
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status         iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-d1c9875a   RUNNING           5           94.4011        0.34763        0.685946            0.685946 │
+│ trial-0416fe84   TERMINATED        2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-c40271af   TERMINATED        6           22.6052        0.327938       0.698741            0.691676 │
+│ trial-e132db4a   TERMINATED        6           17.6257        0.35252        0.693646            0.691158 │
+│ trial-e4635fd9   TERMINATED        2            9.14661       0.400486       0.710817            0.710817 │
+│ trial-34292379   TERMINATED        2            3.59008       0.505164       0.72487             0.72487  │
+│ trial-f6250d11   TERMINATED        4          106.161         1.71522        2.4258              1.17912  │
+│ trial-a98c871b   TERMINATED        6           23.8882        0.353166       0.700033            0.695624 │
+│ trial-b15a263a   TERMINATED        6           22.1329        0.314282       0.709264            0.688493 │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[36m(_train_fn pid=40492)[0m 	iters: 200, epoch: 6 | loss: 0.4036916
+[36m(_train_fn pid=40492)[0m 	speed: 0.0312s/iter; left time: 43.1794s
+[36m(_train_fn pid=40492)[0m 	iters: 300, epoch: 6 | loss: 0.3017064
+[36m(_train_fn pid=40492)[0m 	speed: 0.0311s/iter; left time: 39.9860s
+[36m(_train_fn pid=40492)[0m 	iters: 400, epoch: 6 | loss: 0.2714378
+[36m(_train_fn pid=40492)[0m 	speed: 0.0309s/iter; left time: 36.6024s
+[36m(_train_fn pid=40492)[0m 	iters: 500, epoch: 6 | loss: 0.3051854
+[36m(_train_fn pid=40492)[0m 	speed: 0.0309s/iter; left time: 33.5644s
+[36m(_train_fn pid=40492)[0m Updating learning rate to 2.117988108483079e-05
+[36m(_train_fn pid=40492)[0m saving checkpoint...
+
+Trial trial-d1c9875a completed after 6 iterations at 2024-08-23 05:36:03. Total running time: 5min 44s
+╭───────────────────────────────────────────────────╮
+│ Trial trial-d1c9875a result                       │
+├───────────────────────────────────────────────────┤
+│ checkpoint_dir_name             checkpoint_000005 │
+│ time_this_iter_s                           18.531 │
+│ time_total_s                             112.9321 │
+│ training_iteration                              6 │
+│ best_valid_loss                           0.68595 │
+│ train_loss                                0.34511 │
+│ valid_loss                                0.68663 │
+╰───────────────────────────────────────────────────╯
+
+Trial trial-cc658056 started with configuration:
+╭────────────────────────────────────────────╮
+│ Trial trial-cc658056 config                │
+├────────────────────────────────────────────┤
+│ alpha_d_ff                               3 │
+│ batch_size                              64 │
+│ d_model                                  8 │
+│ decomp_method                   dft_decomp │
+│ down_sampling_method                  conv │
+│ dropout                             0.0941 │
+│ e_layers                                 3 │
+│ learning_rate                      0.00138 │
+╰────────────────────────────────────────────╯
+[36m(_train_fn pid=41288)[0m configuration
+[36m(_train_fn pid=41288)[0m {'batch_size': 64, 'd_model': 8, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'conv', 'dropout': 0.09409776375780991, 'e_layers': 3, 'learning_rate': 0.0013770033902370893, 'd_ff': 24}
+[36m(_train_fn pid=41288)[0m Use GPU: cuda:0
+[36m(_train_fn pid=41288)[0m train 8449
+[36m(_train_fn pid=41288)[0m val 2785
+[36m(_train_fn pid=41288)[0m start_epoch 0
+[36m(_train_fn pid=41288)[0m max_epoch 8
+[36m(_train_fn pid=41288)[0m 	iters: 100, epoch: 1 | loss: 0.8950173
+[36m(_train_fn pid=41288)[0m 	speed: 0.0203s/iter; left time: 19.4602s
+[36m(_train_fn pid=41288)[0m Validation loss decreased (inf --> 1.5865).  Saving model state dict ...
+[36m(_train_fn pid=41288)[0m Epoch: 1 cost time: 2.136692762374878
+[36m(_train_fn pid=41288)[0m Epoch: 1, Steps: 132 | Train Loss: 1.1367736 Vali Loss: 1.5865309 Best vali loss: 1.5865309
+[36m(_train_fn pid=41288)[0m 	iters: 100, epoch: 2 | loss: 0.3824167
+[36m(_train_fn pid=41288)[0m 	speed: 0.0180s/iter; left time: 14.8744s
+[36m(_train_fn pid=41288)[0m Updating learning rate to 0.0013770033902370893
+[36m(_train_fn pid=41288)[0m saving checkpoint...
+[36m(_train_fn pid=41288)[0m Updating learning rate to 0.0006885016951185446
+[36m(_train_fn pid=41288)[0m saving checkpoint...
+[36m(_train_fn pid=41288)[0m Validation loss decreased (1.5865 --> 0.7366).  Saving model state dict ...
+[36m(_train_fn pid=41288)[0m Epoch: 2 cost time: 1.4876296520233154
+[36m(_train_fn pid=41288)[0m Epoch: 2, Steps: 132 | Train Loss: 0.4984808 Vali Loss: 0.7366307 Best vali loss: 0.7366307
+[36m(_train_fn pid=41288)[0m 	iters: 100, epoch: 3 | loss: 0.3440705
+[36m(_train_fn pid=41288)[0m 	speed: 0.0189s/iter; left time: 13.0884s
+[36m(_train_fn pid=41288)[0m Updating learning rate to 0.0003442508475592723
+[36m(_train_fn pid=41288)[0m saving checkpoint...
+[36m(_train_fn pid=41288)[0m Validation loss decreased (0.7366 --> 0.7157).  Saving model state dict ...
+[36m(_train_fn pid=41288)[0m Epoch: 3 cost time: 1.6747546195983887
+[36m(_train_fn pid=41288)[0m Epoch: 3, Steps: 132 | Train Loss: 0.3812840 Vali Loss: 0.7157093 Best vali loss: 0.7157093
+[36m(_train_fn pid=41288)[0m 	iters: 100, epoch: 4 | loss: 0.3656982
+[36m(_train_fn pid=41288)[0m 	speed: 0.0181s/iter; left time: 10.1815s
+[36m(_train_fn pid=41288)[0m Updating learning rate to 0.00017212542377963616
+[36m(_train_fn pid=41288)[0m saving checkpoint...
+[36m(_train_fn pid=41288)[0m Validation loss decreased (0.7157 --> 0.7129).  Saving model state dict ...
+[36m(_train_fn pid=41288)[0m Epoch: 4 cost time: 1.5065271854400635
+2024-08-23 05:36:15,321	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+[36m(_train_fn pid=41288)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-cc658056_10_alpha_d_ff=3,batch_size=64,d_model=8,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.0941,e_layers=_2024-08-23_05-36-03/checkpoint_000004)[32m [repeated 3x across cluster][0m
+2024-08-23 05:36:17,230	WARNING experiment_state.py:206 -- Experiment state snapshotting has been triggered multiple times in the last 5.0 seconds and may become a bottleneck. A snapshot is forced if `CheckpointConfig(num_to_keep)` is set, and a trial has checkpointed >= `num_to_keep` times since the last snapshot.
+You may want to consider increasing the `CheckpointConfig(num_to_keep)` or decreasing the frequency of saving checkpoints.
+You can suppress this warning by setting the environment variable TUNE_WARN_EXCESSIVE_EXPERIMENT_CHECKPOINT_SYNC_THRESHOLD_S to a smaller value than the current threshold (5.0). Set it to 0 to completely suppress this warning.
+2024-08-23 05:36:17,237	INFO tune.py:1009 -- Wrote the latest version of all result files and experiment state to '/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test' in 0.0056s.
+[36m(_train_fn pid=41288)[0m Epoch: 4, Steps: 132 | Train Loss: 0.3740885 Vali Loss: 0.7129078 Best vali loss: 0.7129078
+[36m(_train_fn pid=41288)[0m 	iters: 100, epoch: 5 | loss: 0.3939759
+[36m(_train_fn pid=41288)[0m 	speed: 0.0180s/iter; left time: 7.7054s
+[36m(_train_fn pid=41288)[0m Updating learning rate to 8.606271188981808e-05
+[36m(_train_fn pid=41288)[0m saving checkpoint...
+[36m(_train_fn pid=41288)[0m Validation loss decreased (0.7129 --> 0.7118).  Saving model state dict ...
+[36m(_train_fn pid=41288)[0m Epoch: 5 cost time: 1.5226585865020752
+[36m(_train_fn pid=41288)[0m Epoch: 5, Steps: 132 | Train Loss: 0.3710146 Vali Loss: 0.7117512 Best vali loss: 0.7117512
+[36m(_train_fn pid=41288)[0m 	iters: 100, epoch: 6 | loss: 0.3520169
+[36m(_train_fn pid=41288)[0m 	speed: 0.0188s/iter; left time: 5.5801s
+
+Trial trial-cc658056 completed after 6 iterations at 2024-08-23 05:36:17. Total running time: 5min 58s
+╭───────────────────────────────────────────────────╮
+│ Trial trial-cc658056 result                       │
+├───────────────────────────────────────────────────┤
+│ checkpoint_dir_name             checkpoint_000005 │
+│ time_this_iter_s                          1.90576 │
+│ time_total_s                             11.99411 │
+│ training_iteration                              6 │
+│ best_valid_loss                           0.70964 │
+│ train_loss                                0.36934 │
+│ valid_loss                                0.70964 │
+╰───────────────────────────────────────────────────╯
+
+Trial status: 10 TERMINATED
+Current time: 2024-08-23 05:36:17. Total running time: 5min 58s
+Logical resource usage: 0/32 CPUs, 0/1 GPUs (0.0/1.0 accelerator_type:G)
+Current best trial: d1c9875a with best_valid_loss=0.6859459355901713 and params={'batch_size': 16, 'd_model': 256, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.1031939422525546, 'e_layers': 3, 'learning_rate': 0.0006777561947145852, 'moving_avg': 75, 'd_ff': 1024}
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Trial name       status         iter     total time (s)     train_loss     valid_loss     best_valid_loss │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ trial-0416fe84   TERMINATED        2            2.18192       0.399062       0.718009            0.718009 │
+│ trial-c40271af   TERMINATED        6           22.6052        0.327938       0.698741            0.691676 │
+│ trial-e132db4a   TERMINATED        6           17.6257        0.35252        0.693646            0.691158 │
+│ trial-e4635fd9   TERMINATED        2            9.14661       0.400486       0.710817            0.710817 │
+│ trial-34292379   TERMINATED        2            3.59008       0.505164       0.72487             0.72487  │
+│ trial-f6250d11   TERMINATED        4          106.161         1.71522        2.4258              1.17912  │
+│ trial-a98c871b   TERMINATED        6           23.8882        0.353166       0.700033            0.695624 │
+│ trial-b15a263a   TERMINATED        6           22.1329        0.314282       0.709264            0.688493 │
+│ trial-d1c9875a   TERMINATED        6          112.932         0.345111       0.686627            0.685946 │
+│ trial-cc658056   TERMINATED        6           11.9941        0.369336       0.709635            0.709635 │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+Best hyperparameters found were:  {'batch_size': 16, 'd_model': 256, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.1031939422525546, 'e_layers': 3, 'learning_rate': 0.0006777561947145852, 'moving_avg': 75, 'd_ff': 1024}
+[36m(_train_fn pid=41288)[0m Checkpoint successfully created at: Checkpoint(filesystem=local, path=/home/antonio/Documents/TimeMixer/checkpoints/hptunning/bohb/ETTh1_96_96_test/trial-cc658056_10_alpha_d_ff=3,batch_size=64,d_model=8,decomp_method=dft_decomp,down_sampling_method=conv,dropout=0.0941,e_layers=_2024-08-23_05-36-03/checkpoint_000005)
+[36m(_train_fn pid=41288)[0m Updating learning rate to 4.303135594490904e-05
+[36m(_train_fn pid=41288)[0m saving checkpoint...
+[36m(_train_fn pid=41288)[0m Validation loss decreased (0.7118 --> 0.7096).  Saving model state dict ...
+
+
+Time taken (1 parallel trials): 364 seconds
+
+

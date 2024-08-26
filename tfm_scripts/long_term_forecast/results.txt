@@ -1,0 +1,274 @@
+Error metrics for the weights corresponding to the best-performing epoch
+Performance is measured by loss over validation set.
+
+Results from three similar implementations are compared
+
+The main reason of this experiment is to check if the changes applied 
+alter the inner workings of the official source code. This changes are 
+added in order to improve the compatiblity of the training scripts with 
+the package (ray-tune) utilized to run the hyperparameter optimization process.
+
+1. Original implementation
+2. Original implementation with modifications (code is refactored to improve 
+efficiency and compatiblity with tunning utilities)
+
+ETTh1_96_96
+    Original:
+        Epoch: 2
+        Train Loss: 0.3668943 Vali Loss: 0.6911353 Test Loss: 0.3854010
+        Test MSE: 0.3854 Test MAE: 0.4016
+    Reproduced:
+        Epoch: 3
+        Elapsed Time: 53.549485206604004 s
+        VRAM usage: 0.615234375 Gb
+        Train MSE: 0.3517 Train MAE: 0.4068 
+        Vali MSE: 0.7020 Vali MAE: 0.5526 
+        Test MSE: 0.3857 Test MAE: 0.4006
+
+ETTh1_96_192
+    Original:
+        Epoch: 2 
+        Train Loss: 0.4338939 Vali Loss: 0.9986676 Test Loss: 0.4432691
+        Test MSE: 0.4433 Test MAE: 0.4302
+    Reproduced:
+        Epoch: 6 
+        Elapsed Time: 54.03665232658386 s 
+        VRAM usage: 0.7109375 Gb 
+        Train MSE: 0.4009 Train MAE: 0.4400 
+        Vali MSE: 1.0082 Vali MAE: 0.6628 
+        Test MSE: 0.4343 Test MAE: 0.4319
+
+ETTh1_96_336
+    Original: 
+        Epoch: 1
+        Train Loss: 0.7280973 Vali Loss: 1.3250163 Test Loss: 0.5124233
+        Test MSE: 0.5124 Test MAE: 0.4699
+    Reproduced:
+        Epoch: 2 
+        Elapsed Time: 57.34797382354736 s
+        VRAM usage: 0.73828125 Gb 
+        Train MSE: 0.4871 Train MAE: 0.4861 
+        Vali MSE: 1.3471 Vali MAE: 0.7768 
+        Test MSE: 0.4909 Test MAE: 0.4564
+
+ETTh1_96_720
+    Original: 
+        Epoch: 2, Steps: 61 | Train Loss: 0.6162751 Vali Loss: 1.5717121 Test Loss: 0.4971019
+        Test MSE: 0.4971 Test MAE: 0.4756
+    Reproduced:
+        Epoch: 4 
+        Elapsed Time: 61.61615991592407 s 
+        VRAM usage: 0.89453125 Gb 
+        Train MSE: 0.5714 Train MAE: 0.5407 
+        Vali MSE: 1.6063 Vali MAE: 0.8617 
+        Test MSE: 0.5186 Test MAE: 0.4925
+
+ETTh2_96_96
+    Original: 
+        Test MSE: 0.2908 Test MAE: 0.3430
+        Epoch: 5
+        Train Loss: 0.3760969 Vali Loss: 0.2122439 Test Loss: 0.2907508
+    Reproduced:
+        Epoch: 2 
+        Elapsed Time: 275.9689621925354 s 
+        VRAM usage: 0.384765625 Gb 
+        Train MSE: 0.4161 Train MAE: 0.3615 
+        Vali MSE: 0.2149 Vali MAE: 0.3185 
+        Test MSE: 0.2936 Test MAE: 0.3442
+
+ETTh2_96_192
+    Original: 
+        Epoch: 2
+        Train Loss: 0.5398168 Vali Loss: 0.2791676 Test Loss: 0.3742394
+        Test MSE: 0.3742 Test MAE: 0.3934
+    Reproduced:
+        Epoch: 1 
+        Elapsed Time: 261.7290868759155 s 
+        VRAM usage: 0.384765625 Gb 
+        Train MSE: 0.5409 Train MAE: 0.4191 
+        Vali MSE: 0.2770 Vali MAE: 0.3588 
+        Test MSE: 0.3827 Test MAE: 0.4014
+
+ETTh2_96_336
+    Original: 
+        Epoch: 4
+        Train Loss: 0.6120425 Vali Loss: 0.3678665 Test Loss: 0.4253489
+        Test MSE: 0.4253 Test MAE: 0.4343
+    Reproduced:
+        Epoch: 1 
+        Elapsed Time: 263.5670304298401 s 
+        VRAM usage: 0.384765625 Gb 
+        Train MSE: 0.6458 Train MAE: 0.4621 
+        Vali MSE: 0.3695 Vali MAE: 0.4098 
+        Test MSE: 0.4165 Test MAE: 0.4309
+
+ETTh2_96_720
+    Original: 
+        Epoch: 1
+        Train Loss: 0.8768825 Vali Loss: 0.6292556 Test Loss: 0.4637791
+        Test MSE: 0.4638 Test MAE: 0.4635
+    Reproduced:
+        Epoch: 3 
+        Elapsed Time: 262.494558095932 s 
+        VRAM usage: 0.40625 Gb 
+        Train MSE: 0.7784 Train MAE: 0.5306 
+        Vali MSE: 0.6096 Vali MAE: 0.5408 
+        Test MSE: 0.4257 Test MAE: 0.4421
+
+ETTm1_96_96
+    Original: 
+        Epoch: 6
+        Train Loss: 0.2539216 Vali Loss: 0.3933955 Test Loss: 0.3195869
+        Test MSE: 0.3196 Test MAE: 0.3580
+    Reproduced:
+        Epoch: 3 
+        Elapsed Time: 1073.7614693641663 s 
+        VRAM usage: 0.384765625 Gb 
+        Train MSE: 0.2510 Train MAE: 0.3386 
+        Vali MSE: 0.4001 Vali MAE: 0.4181 
+        Test MSE: 0.3218 Test MAE: 0.3626
+
+ETTm1_96_192
+    Original: 
+        Epoch: 5 
+        Train Loss: 0.3091137 Vali Loss: 0.5100631 Test Loss: 0.3662416
+        Test MSE: 0.3662 Test MAE: 0.3838
+    Reproduced:
+        Epoch: 5 
+        Elapsed Time: 1068.4233722686768 s 
+        VRAM usage: 0.384765625 Gb 
+        Train MSE: 0.2857 Train MAE: 0.3643 
+        Vali MSE: 0.5115 Vali MAE: 0.4767 
+        Test MSE: 0.3637 Test MAE: 0.3838
+
+
+ETTm1_96_336
+    Original: 
+        Epoch: 9
+        Train Loss: 0.3342870 Vali Loss: 0.6505909 Test Loss: 0.3900514
+        Test MSE: 0.3901 Test MAE: 0.4043
+    Reproduced:
+        Epoch: 3 
+        Elapsed Time: 1039.338775396347 s 
+        VRAM usage: 0.384765625 Gb 
+        Train MSE: 0.3578 Train MAE: 0.4109 
+        Vali MSE: 0.6541 Vali MAE: 0.5403 
+        Test MSE: 0.3914 Test MAE: 0.4057
+
+ETTm1_96_720
+    Original:
+        Epoch: 6
+        Train Loss: 0.4259674 Vali Loss: 0.9630566 Test Loss: 0.4598084
+        Test MSE: 0.4598 Test MAE: 0.4445
+    Reproduced:
+        Epoch: 6 
+        Elapsed Time: 1086.465413093567 s 
+        VRAM usage: 0.40625 Gb 
+        Train MSE: 0.4014 Train MAE: 0.4429 
+        Vali MSE: 0.9581 Vali MAE: 0.6524 
+        Test MSE: 0.4588 Test MAE: 0.4458
+
+ETTm2_96_96
+    Original: 
+        Epoch: 2
+        Train Loss: 0.2227926 Vali Loss: 0.1251570 Test Loss: 0.1754611
+        Test MSE: 0.1755 Test MAE: 0.2571
+    Reproduced:
+        Epoch: 4 
+        Elapsed Time: 260.4635634422302 s 
+        VRAM usage: 0.86328125 Gb 
+        Train MSE: 0.1950 Train MAE: 0.2495 
+        Vali MSE: 0.1296 Vali MAE: 0.2462 
+        Test MSE: 0.1793 Test MAE: 0.2634
+
+ETTm2_96_192
+    Original: 
+        Epoch: 4
+        Train Loss: 0.3038281 Vali Loss: 0.1719382 Test Loss: 0.2396735
+        Test MSE: 0.2397 Test MAE: 0.3018
+    Reproduced:
+        Epoch: 3 
+        Elapsed Time: 288.31198048591614 s 
+        VRAM usage: 0.98828125 Gb 
+        Train MSE: 0.2956 Train MAE: 0.3004 
+        Vali MSE: 0.1722 Vali MAE: 0.2864 
+        Test MSE: 0.2417 Test MAE: 0.3060
+
+ETTm2_96_336
+    Original: 
+        Epoch: 2
+        Train Loss: 0.4282679 Vali Loss: 0.2212481 Test Loss: 0.3025172
+        Test MSE: 0.3025 Test MAE: 0.3430
+    Reproduced:
+        Epoch: 3 
+        Elapsed Time: 311.0888886451721 s 
+        VRAM usage: 1.12109375 Gb 
+        Train MSE: 0.4047 Train MAE: 0.3476 
+        Vali MSE: 0.2176 Vali MAE: 0.3209 
+        Test MSE: 0.3015 Test MAE: 0.3438
+
+ETTm2_96_720
+    Original: 
+        Epoch: 4 
+        Train Loss: 0.5516139 Vali Loss: 0.2855450 Test Loss: 0.3907707
+        Test MSE: 0.3908 Test MAE: 0.3946
+    Reproduced:
+        Epoch: 5
+        Elapsed Time: 367.2219789028168 s 
+        VRAM usage: 1.267578125 Gb 
+        Train MSE: 0.5144 Train MAE: 0.4029 
+        Vali MSE: 0.2839 Vali MAE: 0.3660 
+        Test MSE: 0.3991 Test MAE: 0.4025
+
+Weather_96_96
+    Original: 
+        Epoch: 17 
+        Train Loss: 0.3868914 Vali Loss: 0.3941198 Test Loss: 0.1628646
+        Test MSE: 0.1629 Test MAE: 0.2100
+    Reproduced:
+        Epoch: 7 
+        Elapsed Time: 1477.1691360473633 s 
+        VRAM usage: 1.505859375 Gb 
+        Train MSE: 0.4016 Train MAE: 0.2861 
+        Vali MSE: 0.4012 Vali MAE: 0.2732 
+        Test MSE: 0.1630 Test MAE: 0.2099
+
+Weather_96_192
+    Original:
+        Epoch: 9
+        Train Loss: 0.4692707 Vali Loss: 0.4645216 Test Loss: 0.2095684
+        Test MSE: 0.2096 Test MAE: 0.2532
+    Reproduced: 
+        Epoch: 7
+        Elapsed Time: 1550.0275716781616 s
+        VRAM usage: 1.68359375 Gb
+        Train MSE: 0.4660 Train MAE: 0.3375 
+        Vali MSE: 0.4658 Vali MAE: 0.3184 
+        Test MSE: 0.2093 Test MAE: 0.2528
+
+
+Weather_96_336
+    Original: 
+        Epoch: 4
+        Train Loss: 0.5581927 Vali Loss: 0.5416635 Test Loss: 0.2633703
+        Test MSE: 0.2634 Test MAE: 0.2934
+    Reproduced:
+        Epoch: 5 
+        Elapsed Time: 1321.5733201503754 s 
+        VRAM usage: 1.765625 Gb 
+        Train MSE: 0.5404 Train MAE: 0.3895 
+        Vali MSE: 0.5485 Vali MAE: 0.3757 
+        Test MSE: 0.2646 Test MAE: 0.2925
+
+Weather_96_720
+    Original:
+        Epoch: 5
+        Train Loss: 0.6343918 Vali Loss: 0.6740671 Test Loss: 0.3430059
+        Test MSE: 0.3430 Test MAE: 0.3466
+    Reproduced:
+        Epoch: 5 
+        Elapsed Time: 1510.1973209381104 s 
+        VRAM usage: 2.14453125 Gb 
+        Train MSE: 0.6247 Train MAE: 0.4407 
+        Vali MSE: 0.6716 Vali MAE: 0.4543 
+        Test MSE: 0.3401 Test MAE: 0.3427

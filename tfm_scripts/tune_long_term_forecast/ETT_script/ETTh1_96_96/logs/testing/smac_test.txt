@@ -1,0 +1,608 @@
+horizon=96
+maxconcurrent=1
+start_time=$(date +%s)  # Get the current time in seconds
+python3 smac_timemixer.py \
+    --model TimeMixer \
+    --data ETTh1 \
+    --root_path ./dataset/ETT-small/ \
+    --data_path ETTh1.csv \
+    --features M \
+    --seq_len 96 \
+    --label_len 0 \
+    --pred_len $horizon \
+    --enc_in 7 \
+    --dec_in 7 \
+    --c_out 7 \
+    --d_model 16 \
+    --d_ff 32 \
+    --down_sampling_layers 3 \
+    --down_sampling_window 2 \
+    --down_sampling_method avg \
+    --decomp_method moving_avg \
+    --moving_avg 25 \
+    --train_epochs 8 \
+    --patience 0 \
+    --num_workers 1 \
+    --gpu 0 \
+    --smac_storage_path ./checkpoints/hptunning/smac/ \
+    --smac_experiment_name ETTh1_96_${horizon}_teset \
+    --smac_n_trials 10 \
+    --smac_trial_walltime_limit 100 \
+    --smac_time_budget_s 14400 \
+    --smac_n_workers $maxconcurrent \
+    --smac_default_config "{
+        \"batch_size\": 128, \
+        \"learning_rate\": 0.01, \
+        \"down_sampling_method\": \"avg\", \
+        \"d_model\": 16, \
+        \"alpha_d_ff\": 2, \
+        \"decomp_method\": \"moving_avg\", \
+        \"moving_avg\": 25, \
+        \"e_layers\": 2, \
+        \"dropout\": 0.1
+    }" \
+    --smac_param_space "{
+        \"batch_size\": [\"choice\", [16, 32, 64, 128]], \
+        \"learning_rate\": [\"loguniform\", [0.0005, 0.012]], \
+        \"down_sampling_method\": [\"choice\", [\"avg\", \"conv\"]], \
+        \"d_model\": [\"choice\", [8, 16, 32, 64, 128, 256, 512]], \
+        \"alpha_d_ff\": [\"choice\", [2, 3, 4]], \
+        \"decomp_method\": [\"choice\", [[\"moving_avg\", \"moving_avg\", [15, 25, 35, 55, 75]], [\"dft_decomp\"]]], \
+        \"e_layers\": [\"choice\", [1, 2, 3, 4]], \
+        \"dropout\": [\"normal\", [0.05, 0.15, 0.1, 0.025]]
+    }" \
+    --smac_min_budget 1 \
+    --smac_eta 3 \
+    --smac_incumbent_selection "highest_budget" \
+    --smac_n_init_configs 150 \
+    --seed 123;
+end_time=$(date +%s)  # Get the current time in seconds
+elapsed_time=$((end_time - start_time))  # Calculate the elapsed time
+echo ""
+echo ""
+echo "Time taken ($maxconcurrent parallel trials): $elapsed_time seconds"
+echo ""
+echo ""[INFO][abstract_initial_design.py:147] Using 2 initial design configurations and 1 additional configurations.
+[INFO][successive_halving.py:164] Successive Halving uses budget type BUDGETS with eta 3, min budget 1, and max budget 8.
+[INFO][successive_halving.py:323] Number of configs in stage:
+[INFO][successive_halving.py:325] --- Bracket 0: [3, 1]
+[INFO][successive_halving.py:325] --- Bracket 1: [2]
+[INFO][successive_halving.py:327] Budgets in stage:
+[INFO][successive_halving.py:329] --- Bracket 0: [2.6666666666666665, 8.0]
+[INFO][successive_halving.py:329] --- Bracket 1: [8.0]
+{'batch_size': 64, 'd_model': 64, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'avg', 'dropout': 0.0836357868718, 'e_layers': 1, 'learning_rate': 0.0037547181247, 'd_ff': 256}
+Use GPU: cuda:0
+train 8449
+val 2785
+starting training loop
+budget 2.6666666666666665
+start_epoch 0
+train_epoch 3
+	iters: 100, epoch: 1 | loss: 0.5103375
+	speed: 0.0158s/iter; left time: 4.6991s
+Updating learning rate to 0.0037547181247
+Validation loss decreased (inf --> 0.9653).  Saving model state dict ...
+Epoch: 1 cost time: 1.549769401550293
+Epoch: 1, Steps: 132 | Train Loss: 0.5733834 Vali Loss: 0.9653321 Best vali loss: 0.9653321
+	iters: 100, epoch: 2 | loss: 0.3985631
+	speed: 0.0137s/iter; left time: 2.2548s
+Updating learning rate to 0.00187735906235
+Validation loss decreased (0.9653 --> 0.7042).  Saving model state dict ...
+Epoch: 2 cost time: 1.1201601028442383
+Epoch: 2, Steps: 132 | Train Loss: 0.3914308 Vali Loss: 0.7041693 Best vali loss: 0.7041693
+	iters: 100, epoch: 3 | loss: 0.3362637
+	speed: 0.0137s/iter; left time: 0.4532s
+Updating learning rate to 0.000938679531175
+Validation loss decreased (0.7042 --> 0.6943).  Saving model state dict ...
+Epoch: 3 cost time: 1.1209015846252441
+Epoch: 3, Steps: 132 | Train Loss: 0.3535299 Vali Loss: 0.6942972 Best vali loss: 0.6942972
+
+best validation loss 0.6942971565349157
+
+{'batch_size': 64, 'd_model': 16, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.1121061086003, 'e_layers': 4, 'learning_rate': 0.0074364440642, 'moving_avg': 55, 'd_ff': 48}
+Use GPU: cuda:0
+train 8449
+val 2785
+starting training loop
+budget 2.6666666666666665
+start_epoch 0
+train_epoch 3
+	iters: 100, epoch: 1 | loss: 0.4650550
+	speed: 0.0200s/iter; left time: 5.9469s
+Updating learning rate to 0.0074364440642
+Validation loss decreased (inf --> 0.8344).  Saving model state dict ...
+Epoch: 1 cost time: 2.158137083053589
+Epoch: 1, Steps: 132 | Train Loss: 0.5731447 Vali Loss: 0.8343698 Best vali loss: 0.8343698
+	iters: 100, epoch: 2 | loss: 0.3902489
+	speed: 0.0218s/iter; left time: 3.5908s
+Updating learning rate to 0.0037182220321
+Validation loss decreased (0.8344 --> 0.6906).  Saving model state dict ...
+Epoch: 2 cost time: 1.9522240161895752
+Epoch: 2, Steps: 132 | Train Loss: 0.3740344 Vali Loss: 0.6906130 Best vali loss: 0.6906130
+	iters: 100, epoch: 3 | loss: 0.3698727
+	speed: 0.0226s/iter; left time: 0.7455s
+Updating learning rate to 0.00185911101605
+Epoch: 3 cost time: 2.0070061683654785
+Epoch: 3, Steps: 132 | Train Loss: 0.3471377 Vali Loss: 0.6919672 Best vali loss: 0.6906130
+
+best validation loss 0.6906130327734836
+
+{'batch_size': 128, 'd_model': 16, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.1, 'e_layers': 2, 'learning_rate': 0.01, 'moving_avg': 25, 'd_ff': 32}
+Use GPU: cuda:0
+train 8449
+val 2785
+starting training loop
+budget 2.6666666666666665
+start_epoch 0
+train_epoch 3
+Updating learning rate to 0.01
+Validation loss decreased (inf --> 1.0509).  Saving model state dict ...
+Epoch: 1 cost time: 0.8918228149414062
+Epoch: 1, Steps: 66 | Train Loss: 0.6187816 Vali Loss: 1.0508947 Best vali loss: 1.0508947
+Updating learning rate to 0.005
+Validation loss decreased (1.0509 --> 0.7180).  Saving model state dict ...
+Epoch: 2 cost time: 0.6531002521514893
+Epoch: 2, Steps: 66 | Train Loss: 0.3990616 Vali Loss: 0.7180091 Best vali loss: 0.7180091
+Updating learning rate to 0.0025
+Validation loss decreased (0.7180 --> 0.7077).  Saving model state dict ...
+Epoch: 3 cost time: 0.6826903820037842
+Epoch: 3, Steps: 66 | Train Loss: 0.3565136 Vali Loss: 0.7076579 Best vali loss: 0.7076579
+
+best validation loss 0.7076579254297983
+
+{'batch_size': 64, 'd_model': 16, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.1121061086003, 'e_layers': 4, 'learning_rate': 0.0074364440642, 'moving_avg': 55, 'd_ff': 48}
+Use GPU: cuda:0
+train 8449
+val 2785
+loading checkpoint...
+starting training loop
+budget 8.0
+start_epoch 3
+train_epoch 8
+	iters: 100, epoch: 4 | loss: 0.3378810
+	speed: 0.0202s/iter; left time: 11.3290s
+Updating learning rate to 0.000929555508025
+Validation loss decreased (0.6906 --> 0.6872).  Saving model state dict ...
+Epoch: 4 cost time: 2.156493663787842
+Epoch: 4, Steps: 132 | Train Loss: 0.3350599 Vali Loss: 0.6872146 Best vali loss: 0.6872146
+	iters: 100, epoch: 5 | loss: 0.3460146
+	speed: 0.0219s/iter; left time: 9.3968s
+Updating learning rate to 0.0004647777540125
+Epoch: 5 cost time: 1.9335200786590576
+Epoch: 5, Steps: 132 | Train Loss: 0.3266209 Vali Loss: 0.6909419 Best vali loss: 0.6872146
+	iters: 100, epoch: 6 | loss: 0.3477789
+	speed: 0.0212s/iter; left time: 6.2905s
+Updating learning rate to 0.00023238887700625
+Epoch: 6 cost time: 1.8339612483978271
+Epoch: 6, Steps: 132 | Train Loss: 0.3204860 Vali Loss: 0.6955248 Best vali loss: 0.6872146
+	iters: 100, epoch: 7 | loss: 0.3264327
+	speed: 0.0221s/iter; left time: 3.6479s
+Updating learning rate to 0.000116194438503125
+Epoch: 7 cost time: 2.0255632400512695
+Epoch: 7, Steps: 132 | Train Loss: 0.3183320 Vali Loss: 0.7035746 Best vali loss: 0.6872146
+	iters: 100, epoch: 8 | loss: 0.3124437
+	speed: 0.0224s/iter; left time: 0.7384s
+Updating learning rate to 5.80972192515625e-05
+Epoch: 8 cost time: 1.9547603130340576
+Epoch: 8, Steps: 132 | Train Loss: 0.3163150 Vali Loss: 0.7033762 Best vali loss: 0.6872146
+
+best validation loss 0.6872146202381267
+
+[INFO][abstract_intensifier.py:516] Added config 8792ff as new incumbent because there are no incumbents yet.
+{'batch_size': 32, 'd_model': 8, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'avg', 'dropout': 0.137367941169, 'e_layers': 3, 'learning_rate': 0.0085188455292, 'd_ff': 24}
+Use GPU: cuda:0
+train 8449
+val 2785
+starting training loop
+budget 8.0
+start_epoch 0
+train_epoch 8
+	iters: 100, epoch: 1 | loss: 0.4518669
+	speed: 0.0181s/iter; left time: 36.5017s
+	iters: 200, epoch: 1 | loss: 0.4769548
+	speed: 0.0115s/iter; left time: 21.9171s
+Updating learning rate to 0.0085188455292
+Validation loss decreased (inf --> 0.7532).  Saving model state dict ...
+Epoch: 1 cost time: 3.4633750915527344
+Epoch: 1, Steps: 264 | Train Loss: 0.5584368 Vali Loss: 0.7531819 Best vali loss: 0.7531819
+	iters: 100, epoch: 2 | loss: 0.3871814
+	speed: 0.0232s/iter; left time: 40.5061s
+	iters: 200, epoch: 2 | loss: 0.3268682
+	speed: 0.0115s/iter; left time: 18.9070s
+Updating learning rate to 0.0042594227646
+Validation loss decreased (0.7532 --> 0.7187).  Saving model state dict ...
+Epoch: 2 cost time: 3.065890073776245
+Epoch: 2, Steps: 264 | Train Loss: 0.3696390 Vali Loss: 0.7187187 Best vali loss: 0.7187187
+	iters: 100, epoch: 3 | loss: 0.3498931
+	speed: 0.0234s/iter; left time: 34.6750s
+	iters: 200, epoch: 3 | loss: 0.3111562
+	speed: 0.0113s/iter; left time: 15.7187s
+Updating learning rate to 0.0021297113823
+Validation loss decreased (0.7187 --> 0.6916).  Saving model state dict ...
+Epoch: 3 cost time: 3.040302276611328
+Epoch: 3, Steps: 264 | Train Loss: 0.3462147 Vali Loss: 0.6916007 Best vali loss: 0.6916007
+	iters: 100, epoch: 4 | loss: 0.3896012
+	speed: 0.0226s/iter; left time: 27.6490s
+	iters: 200, epoch: 4 | loss: 0.3582694
+	speed: 0.0107s/iter; left time: 12.0385s
+Updating learning rate to 0.00106485569115
+Epoch: 4 cost time: 2.8803024291992188
+Epoch: 4, Steps: 264 | Train Loss: 0.3369665 Vali Loss: 0.7019069 Best vali loss: 0.6916007
+	iters: 100, epoch: 5 | loss: 0.2904519
+	speed: 0.0218s/iter; left time: 20.8685s
+	iters: 200, epoch: 5 | loss: 0.3013791
+	speed: 0.0104s/iter; left time: 8.9391s
+Updating learning rate to 0.000532427845575
+Epoch: 5 cost time: 2.8026211261749268
+Epoch: 5, Steps: 264 | Train Loss: 0.3287528 Vali Loss: 0.6983459 Best vali loss: 0.6916007
+	iters: 100, epoch: 6 | loss: 0.2829403
+	speed: 0.0218s/iter; left time: 15.1388s
+	iters: 200, epoch: 6 | loss: 0.3056321
+	speed: 0.0105s/iter; left time: 6.2408s
+Updating learning rate to 0.0002662139227875
+Epoch: 6 cost time: 2.859297275543213
+Epoch: 6, Steps: 264 | Train Loss: 0.3228454 Vali Loss: 0.6971855 Best vali loss: 0.6916007
+	iters: 100, epoch: 7 | loss: 0.3158855
+	speed: 0.0224s/iter; left time: 9.6036s
+	iters: 200, epoch: 7 | loss: 0.3135100
+	speed: 0.0106s/iter; left time: 3.4891s
+Updating learning rate to 0.00013310696139375
+Epoch: 7 cost time: 2.8443078994750977
+Epoch: 7, Steps: 264 | Train Loss: 0.3193165 Vali Loss: 0.6968114 Best vali loss: 0.6916007
+	iters: 100, epoch: 8 | loss: 0.3064926
+	speed: 0.0222s/iter; left time: 3.6591s
+	iters: 200, epoch: 8 | loss: 0.2882112
+	speed: 0.0105s/iter; left time: 0.6817s
+Updating learning rate to 6.6553480696875e-05
+Epoch: 8 cost time: 2.8698885440826416
+Epoch: 8, Steps: 264 | Train Loss: 0.3176821 Vali Loss: 0.7007235 Best vali loss: 0.6916007
+
+best validation loss 0.6916007228281306
+
+{'batch_size': 64, 'd_model': 128, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.1224990076816, 'e_layers': 1, 'learning_rate': 0.0028569290645, 'moving_avg': 25, 'd_ff': 512}
+Use GPU: cuda:0
+train 8449
+val 2785
+starting training loop
+budget 8.0
+start_epoch 0
+train_epoch 8
+	iters: 100, epoch: 1 | loss: 0.5555825
+	speed: 0.0223s/iter; left time: 21.3044s
+Updating learning rate to 0.0028569290645
+Validation loss decreased (inf --> 1.0052).  Saving model state dict ...
+Epoch: 1 cost time: 2.5646607875823975
+Epoch: 1, Steps: 132 | Train Loss: 0.6201699 Vali Loss: 1.0051957 Best vali loss: 1.0051957
+	iters: 100, epoch: 2 | loss: 0.3650577
+	speed: 0.0271s/iter; left time: 22.3649s
+Updating learning rate to 0.00142846453225
+Validation loss decreased (1.0052 --> 0.7204).  Saving model state dict ...
+Epoch: 2 cost time: 2.3402411937713623
+Epoch: 2, Steps: 132 | Train Loss: 0.3951106 Vali Loss: 0.7204393 Best vali loss: 0.7204393
+	iters: 100, epoch: 3 | loss: 0.3707210
+	speed: 0.0269s/iter; left time: 18.6404s
+Updating learning rate to 0.000714232266125
+Validation loss decreased (0.7204 --> 0.7157).  Saving model state dict ...
+Epoch: 3 cost time: 2.3334836959838867
+Epoch: 3, Steps: 132 | Train Loss: 0.3610375 Vali Loss: 0.7157092 Best vali loss: 0.7157092
+	iters: 100, epoch: 4 | loss: 0.3518697
+	speed: 0.0270s/iter; left time: 15.1604s
+Updating learning rate to 0.0003571161330625
+Validation loss decreased (0.7157 --> 0.6919).  Saving model state dict ...
+Epoch: 4 cost time: 2.350640058517456
+Epoch: 4, Steps: 132 | Train Loss: 0.3547838 Vali Loss: 0.6918517 Best vali loss: 0.6918517
+	iters: 100, epoch: 5 | loss: 0.3789983
+	speed: 0.0271s/iter; left time: 11.6465s
+Updating learning rate to 0.00017855806653125
+Epoch: 5 cost time: 2.3506038188934326
+Epoch: 5, Steps: 132 | Train Loss: 0.3515066 Vali Loss: 0.6936544 Best vali loss: 0.6918517
+	iters: 100, epoch: 6 | loss: 0.3179168
+	speed: 0.0269s/iter; left time: 7.9863s
+Updating learning rate to 8.9279033265625e-05
+Validation loss decreased (0.6919 --> 0.6913).  Saving model state dict ...
+Epoch: 6 cost time: 2.3380534648895264
+Epoch: 6, Steps: 132 | Train Loss: 0.3500268 Vali Loss: 0.6913441 Best vali loss: 0.6913441
+	iters: 100, epoch: 7 | loss: 0.3635905
+	speed: 0.0270s/iter; left time: 4.4489s
+Updating learning rate to 4.46395166328125e-05
+Epoch: 7 cost time: 2.3490278720855713
+Epoch: 7, Steps: 132 | Train Loss: 0.3490365 Vali Loss: 0.6945352 Best vali loss: 0.6913441
+	iters: 100, epoch: 8 | loss: 0.2933959
+	speed: 0.0270s/iter; left time: 0.8910s
+Updating learning rate to 2.231975831640625e-05
+Epoch: 8 cost time: 2.3439009189605713
+Epoch: 8, Steps: 132 | Train Loss: 0.3484172 Vali Loss: 0.6930034 Best vali loss: 0.6913441
+
+best validation loss 0.6913441287916761
+
+{'batch_size': 32, 'd_model': 8, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'avg', 'dropout': 0.0861734893682, 'e_layers': 2, 'learning_rate': 0.0008635966321, 'd_ff': 16}
+Use GPU: cuda:0
+train 8449
+val 2785
+starting training loop
+budget 2.6666666666666665
+start_epoch 0
+train_epoch 3
+	iters: 100, epoch: 1 | loss: 2.1235664
+	speed: 0.0160s/iter; left time: 11.0690s
+	iters: 200, epoch: 1 | loss: 2.1054838
+	speed: 0.0090s/iter; left time: 5.3615s
+Updating learning rate to 0.0008635966321
+Validation loss decreased (inf --> 2.8367).  Saving model state dict ...
+Epoch: 1 cost time: 2.8601133823394775
+Epoch: 1, Steps: 264 | Train Loss: 2.3922459 Vali Loss: 2.8366944 Best vali loss: 2.8366944
+	iters: 100, epoch: 2 | loss: 0.5025286
+	speed: 0.0178s/iter; left time: 7.6416s
+	iters: 200, epoch: 2 | loss: 0.4049807
+	speed: 0.0082s/iter; left time: 2.6895s
+Updating learning rate to 0.00043179831605
+Validation loss decreased (2.8367 --> 0.7351).  Saving model state dict ...
+Epoch: 2 cost time: 2.2030365467071533
+Epoch: 2, Steps: 264 | Train Loss: 0.5266507 Vali Loss: 0.7351098 Best vali loss: 0.7351098
+	iters: 100, epoch: 3 | loss: 0.3490647
+	speed: 0.0182s/iter; left time: 3.0021s
+	iters: 200, epoch: 3 | loss: 0.4245239
+	speed: 0.0091s/iter; left time: 0.5926s
+Updating learning rate to 0.000215899158025
+Validation loss decreased (0.7351 --> 0.7225).  Saving model state dict ...
+Epoch: 3 cost time: 2.4355838298797607
+Epoch: 3, Steps: 264 | Train Loss: 0.3946525 Vali Loss: 0.7224763 Best vali loss: 0.7224763
+
+best validation loss 0.7224763293547192
+
+{'batch_size': 64, 'd_model': 64, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'avg', 'dropout': 0.0901386749456, 'e_layers': 3, 'learning_rate': 0.0037547181247, 'd_ff': 192}
+Use GPU: cuda:0
+train 8449
+val 2785
+starting training loop
+budget 2.6666666666666665
+start_epoch 0
+train_epoch 3
+	iters: 100, epoch: 1 | loss: 0.5963430
+	speed: 0.0257s/iter; left time: 7.6214s
+Updating learning rate to 0.0037547181247
+Validation loss decreased (inf --> 0.9737).  Saving model state dict ...
+Epoch: 1 cost time: 2.9542887210845947
+Epoch: 1, Steps: 132 | Train Loss: 0.5761574 Vali Loss: 0.9736871 Best vali loss: 0.9736871
+	iters: 100, epoch: 2 | loss: 0.3393277
+	speed: 0.0297s/iter; left time: 4.9002s
+Updating learning rate to 0.00187735906235
+Validation loss decreased (0.9737 --> 0.7083).  Saving model state dict ...
+Epoch: 2 cost time: 2.5077953338623047
+Epoch: 2, Steps: 132 | Train Loss: 0.3846107 Vali Loss: 0.7082543 Best vali loss: 0.7082543
+	iters: 100, epoch: 3 | loss: 0.2904711
+	speed: 0.0296s/iter; left time: 0.9769s
+Updating learning rate to 0.000938679531175
+Validation loss decreased (0.7083 --> 0.6862).  Saving model state dict ...
+Epoch: 3 cost time: 2.489845037460327
+Epoch: 3, Steps: 132 | Train Loss: 0.3502397 Vali Loss: 0.6862415 Best vali loss: 0.6862415
+
+best validation loss 0.6862415194857953
+
+{'batch_size': 32, 'd_model': 8, 'decomp_method': 'moving_avg', 'down_sampling_method': 'conv', 'dropout': 0.1381218732512, 'e_layers': 4, 'learning_rate': 0.0038766625636, 'moving_avg': 15, 'd_ff': 16}
+Use GPU: cuda:0
+train 8449
+val 2785
+starting training loop
+budget 2.6666666666666665
+start_epoch 0
+train_epoch 3
+	iters: 100, epoch: 1 | loss: 0.6916333
+	speed: 0.0197s/iter; left time: 13.6561s
+	iters: 200, epoch: 1 | loss: 0.5887989
+	speed: 0.0148s/iter; left time: 8.7996s
+Updating learning rate to 0.0038766625636
+Validation loss decreased (inf --> 0.9684).  Saving model state dict ...
+Epoch: 1 cost time: 4.1521196365356445
+Epoch: 1, Steps: 264 | Train Loss: 0.6527759 Vali Loss: 0.9683549 Best vali loss: 0.9683549
+	iters: 100, epoch: 2 | loss: 0.3758089
+	speed: 0.0290s/iter; left time: 12.4262s
+	iters: 200, epoch: 2 | loss: 0.3422335
+	speed: 0.0149s/iter; left time: 4.8919s
+Updating learning rate to 0.0019383312818
+Validation loss decreased (0.9684 --> 0.7026).  Saving model state dict ...
+Epoch: 2 cost time: 3.963899612426758
+Epoch: 2, Steps: 264 | Train Loss: 0.3749833 Vali Loss: 0.7026234 Best vali loss: 0.7026234
+	iters: 100, epoch: 3 | loss: 0.3181230
+	speed: 0.0295s/iter; left time: 4.8724s
+	iters: 200, epoch: 3 | loss: 0.3195207
+	speed: 0.0150s/iter; left time: 0.9734s
+Updating learning rate to 0.0009691656409
+Validation loss decreased (0.7026 --> 0.7024).  Saving model state dict ...
+Epoch: 3 cost time: 3.9764256477355957
+Epoch: 3, Steps: 264 | Train Loss: 0.3422721 Vali Loss: 0.7024366 Best vali loss: 0.7024366
+
+best validation loss 0.7024366387176788
+
+{'batch_size': 64, 'd_model': 64, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'avg', 'dropout': 0.0901386749456, 'e_layers': 3, 'learning_rate': 0.0037547181247, 'd_ff': 192}
+Use GPU: cuda:0
+train 8449
+val 2785
+loading checkpoint...
+starting training loop
+budget 8.0
+start_epoch 3
+train_epoch 8
+	iters: 100, epoch: 4 | loss: 0.4043404
+	speed: 0.0254s/iter; left time: 14.2570s
+Updating learning rate to 0.0004693397655875
+Epoch: 4 cost time: 2.899435520172119
+Epoch: 4, Steps: 132 | Train Loss: 0.3415460 Vali Loss: 0.6867225 Best vali loss: 0.6862415
+	iters: 100, epoch: 5 | loss: 0.3169408
+	speed: 0.0295s/iter; left time: 12.6513s
+Updating learning rate to 0.00023466988279375
+Validation loss decreased (0.6862 --> 0.6857).  Saving model state dict ...
+Epoch: 5 cost time: 2.499438762664795
+Epoch: 5, Steps: 132 | Train Loss: 0.3357921 Vali Loss: 0.6856746 Best vali loss: 0.6856746
+	iters: 100, epoch: 6 | loss: 0.2768702
+	speed: 0.0311s/iter; left time: 9.2491s
+Updating learning rate to 0.000117334941396875
+Validation loss decreased (0.6857 --> 0.6806).  Saving model state dict ...
+Epoch: 6 cost time: 3.1632072925567627
+Epoch: 6, Steps: 132 | Train Loss: 0.3324383 Vali Loss: 0.6806333 Best vali loss: 0.6806333
+	iters: 100, epoch: 7 | loss: 0.3836188
+	speed: 0.0574s/iter; left time: 9.4707s
+Updating learning rate to 5.86674706984375e-05
+Epoch: 7 cost time: 5.073002338409424
+Epoch: 7, Steps: 132 | Train Loss: 0.3310370 Vali Loss: 0.6817899 Best vali loss: 0.6806333
+	iters: 100, epoch: 8 | loss: 0.3363879
+	speed: 0.0595s/iter; left time: 1.9646s
+Updating learning rate to 2.933373534921875e-05
+Epoch: 8 cost time: 5.1467626094818115
+Epoch: 8, Steps: 132 | Train Loss: 0.3299793 Vali Loss: 0.6825117 Best vali loss: 0.6806333
+
+best validation loss 0.6806332870971324
+
+[INFO][abstract_intensifier.py:595] Added config 544570 and rejected config 8792ff as incumbent because it is not better than the incumbents on 1 instances:
+[INFO][smbo.py:328] Configuration budget is exhausted:
+[INFO][smbo.py:329] --- Remaining wallclock time: 14267.035053491592
+[INFO][smbo.py:330] --- Remaining cpu time: inf
+[INFO][smbo.py:331] --- Remaining trials: 0
+{'batch_size': 16, 'd_model': 8, 'decomp_method': 'moving_avg', 'down_sampling_method': 'avg', 'dropout': 0.1, 'e_layers': 1, 'learning_rate': 0.0024494897428, 'moving_avg': 15, 'd_ff': 16}
+Use GPU: cuda:0
+train 8449
+val 2785
+starting training loop
+budget 8
+start_epoch 0
+train_epoch 8
+	iters: 100, epoch: 1 | loss: 1.1259414
+	speed: 0.0164s/iter; left time: 67.8439s
+	iters: 200, epoch: 1 | loss: 0.8996143
+	speed: 0.0101s/iter; left time: 40.4760s
+	iters: 300, epoch: 1 | loss: 0.4847894
+	speed: 0.0105s/iter; left time: 41.2546s
+	iters: 400, epoch: 1 | loss: 0.4157490
+	speed: 0.0100s/iter; left time: 38.2211s
+	iters: 500, epoch: 1 | loss: 0.4555432
+	speed: 0.0089s/iter; left time: 32.9809s
+Updating learning rate to 0.0024494897428
+Validation loss decreased (inf --> 0.8351).  Saving model state dict ...
+Epoch: 1 cost time: 5.548926115036011
+Epoch: 1, Steps: 528 | Train Loss: 0.8137982 Vali Loss: 0.8350945 Best vali loss: 0.8350945
+	iters: 100, epoch: 2 | loss: 0.3823774
+	speed: 0.0138s/iter; left time: 49.6589s
+	iters: 200, epoch: 2 | loss: 0.3639867
+	speed: 0.0066s/iter; left time: 23.1490s
+	iters: 300, epoch: 2 | loss: 0.4424335
+	speed: 0.0066s/iter; left time: 22.5817s
+	iters: 400, epoch: 2 | loss: 0.3474267
+	speed: 0.0066s/iter; left time: 21.8897s
+	iters: 500, epoch: 2 | loss: 0.4139001
+	speed: 0.0066s/iter; left time: 21.0824s
+Updating learning rate to 0.0012247448714
+Validation loss decreased (0.8351 --> 0.7091).  Saving model state dict ...
+Epoch: 2 cost time: 3.5536389350891113
+Epoch: 2, Steps: 528 | Train Loss: 0.3758011 Vali Loss: 0.7091087 Best vali loss: 0.7091087
+	iters: 100, epoch: 3 | loss: 0.2988649
+	speed: 0.0134s/iter; left time: 41.1916s
+	iters: 200, epoch: 3 | loss: 0.3729565
+	speed: 0.0062s/iter; left time: 18.4955s
+	iters: 300, epoch: 3 | loss: 0.3248014
+	speed: 0.0061s/iter; left time: 17.5965s
+	iters: 400, epoch: 3 | loss: 0.3099497
+	speed: 0.0062s/iter; left time: 17.1626s
+	iters: 500, epoch: 3 | loss: 0.3454246
+	speed: 0.0062s/iter; left time: 16.5332s
+Updating learning rate to 0.0006123724357
+Validation loss decreased (0.7091 --> 0.6961).  Saving model state dict ...
+Epoch: 3 cost time: 3.3110289573669434
+Epoch: 3, Steps: 528 | Train Loss: 0.3552437 Vali Loss: 0.6961002 Best vali loss: 0.6961002
+	iters: 100, epoch: 4 | loss: 0.3241292
+	speed: 0.0143s/iter; left time: 36.2876s
+	iters: 200, epoch: 4 | loss: 0.3819461
+	speed: 0.0067s/iter; left time: 16.2887s
+	iters: 300, epoch: 4 | loss: 0.3680635
+	speed: 0.0066s/iter; left time: 15.4709s
+	iters: 400, epoch: 4 | loss: 0.4641668
+	speed: 0.0067s/iter; left time: 14.9338s
+	iters: 500, epoch: 4 | loss: 0.3578310
+	speed: 0.0066s/iter; left time: 14.1345s
+Updating learning rate to 0.00030618621785
+Validation loss decreased (0.6961 --> 0.6881).  Saving model state dict ...
+Epoch: 4 cost time: 3.548724412918091
+Epoch: 4, Steps: 528 | Train Loss: 0.3484085 Vali Loss: 0.6880554 Best vali loss: 0.6880554
+	iters: 100, epoch: 5 | loss: 0.3222789
+	speed: 0.0136s/iter; left time: 27.4130s
+	iters: 200, epoch: 5 | loss: 0.3186470
+	speed: 0.0066s/iter; left time: 12.6486s
+	iters: 300, epoch: 5 | loss: 0.3011258
+	speed: 0.0066s/iter; left time: 11.9335s
+	iters: 400, epoch: 5 | loss: 0.3704392
+	speed: 0.0065s/iter; left time: 11.2074s
+	iters: 500, epoch: 5 | loss: 0.4050725
+	speed: 0.0066s/iter; left time: 10.6772s
+Updating learning rate to 0.000153093108925
+Epoch: 5 cost time: 3.5206754207611084
+Epoch: 5, Steps: 528 | Train Loss: 0.3450485 Vali Loss: 0.6921348 Best vali loss: 0.6880554
+	iters: 100, epoch: 6 | loss: 0.4562522
+	speed: 0.0130s/iter; left time: 19.2342s
+	iters: 200, epoch: 6 | loss: 0.2969071
+	speed: 0.0061s/iter; left time: 8.4670s
+	iters: 300, epoch: 6 | loss: 0.3307484
+	speed: 0.0062s/iter; left time: 7.9219s
+	iters: 400, epoch: 6 | loss: 0.2879776
+	speed: 0.0062s/iter; left time: 7.3404s
+	iters: 500, epoch: 6 | loss: 0.3077623
+	speed: 0.0062s/iter; left time: 6.6760s
+Updating learning rate to 7.65465544625e-05
+Epoch: 6 cost time: 3.2905704975128174
+Epoch: 6, Steps: 528 | Train Loss: 0.3425770 Vali Loss: 0.6894156 Best vali loss: 0.6880554
+	iters: 100, epoch: 7 | loss: 0.3286201
+	speed: 0.0137s/iter; left time: 13.1145s
+	iters: 200, epoch: 7 | loss: 0.2157717
+	speed: 0.0067s/iter; left time: 5.7257s
+	iters: 300, epoch: 7 | loss: 0.4929934
+	speed: 0.0067s/iter; left time: 5.0737s
+	iters: 400, epoch: 7 | loss: 0.2790491
+	speed: 0.0066s/iter; left time: 4.3571s
+	iters: 500, epoch: 7 | loss: 0.2711276
+	speed: 0.0066s/iter; left time: 3.6488s
+Updating learning rate to 3.827327723125e-05
+Epoch: 7 cost time: 3.561086654663086
+Epoch: 7, Steps: 528 | Train Loss: 0.3412852 Vali Loss: 0.6934711 Best vali loss: 0.6880554
+	iters: 100, epoch: 8 | loss: 0.3025763
+	speed: 0.0136s/iter; left time: 5.8159s
+	iters: 200, epoch: 8 | loss: 0.2533850
+	speed: 0.0066s/iter; left time: 2.1849s
+	iters: 300, epoch: 8 | loss: 0.2945924
+	speed: 0.0066s/iter; left time: 1.5176s
+	iters: 400, epoch: 8 | loss: 0.2894858
+	speed: 0.0066s/iter; left time: 0.8493s
+	iters: 500, epoch: 8 | loss: 0.3441731
+	speed: 0.0066s/iter; left time: 0.1902s
+Updating learning rate to 1.9136638615625e-05
+Epoch: 8 cost time: 3.527909994125366
+Epoch: 8, Steps: 528 | Train Loss: 0.3404423 Vali Loss: 0.6895301 Best vali loss: 0.6880554
+
+best validation loss 0.6880554026313896
+
+Default cost: 0.6880554026313896
+{'batch_size': 64, 'd_model': 64, 'decomp_method': 'dft_decomp', 'down_sampling_method': 'avg', 'dropout': 0.0901386749456, 'e_layers': 3, 'learning_rate': 0.0037547181247, 'd_ff': 192}
+Use GPU: cuda:0
+train 8449
+val 2785
+loading checkpoint...
+starting training loop
+budget 8
+start_epoch 8
+train_epoch 8
+
+best validation loss 0.6806332870971324
+
+Configuration(values={
+  'alpha_d_ff': 3,
+  'batch_size': 64,
+  'd_model': 64,
+  'decomp_method': 'dft_decomp',
+  'down_sampling_method': 'avg',
+  'dropout': 0.0901386749456,
+  'e_layers': 3,
+  'learning_rate': 0.0037547181247,
+})
+Incumbent cost: 0.6806332870971324
+
+
+Time taken (1 parallel trials): 169 seconds
+
+
