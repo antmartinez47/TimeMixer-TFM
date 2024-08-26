@@ -2,8 +2,8 @@ name: py3.11-timemixer-raytune
 channels:
   - conda-forge
 dependencies:
-  - python==3.11
-  - pip==24.2
+  - python=3.11
+  - pip=24.2
   - pip:
     - ConfigSpace==0.6.1
     - hpbandster==0.7.4
