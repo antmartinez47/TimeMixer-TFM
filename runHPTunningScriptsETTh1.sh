@@ -48,21 +48,7 @@ cat tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_336/bohb.sh > tfm_sc
 cat tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_720/bohb.sh > tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_720/logs/bohb.txt
 . tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_720/bohb.sh >> tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_720/logs/bohb.txt 2>&1
 
-# SMAC
-
-cat tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_96/smac.sh > tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_96/logs/smac.txt
-. tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_96/smac.sh >> tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_96/logs/smac.txt 2>&1
-
-cat tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_192/smac.sh > tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_192/logs/smac.txt
-. tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_192/smac.sh >> tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_192/logs/smac.txt 2>&1
-
-cat tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_336/smac.sh > tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_336/logs/smac.txt
-. tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_336/smac.sh >> tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_336/logs/smac.txt 2>&1
-
-cat tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_720/smac.sh > tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_720/logs/smac.txt
-. tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_720/smac.sh >> tfm_scripts/tune_long_term_forecast/ETT_script/ETTh1_96_720/logs/smac.txt 2>&1
-
-donda deactivate
+conda deactivate
 
 conda activate py3.10-timemixer-smac
 
