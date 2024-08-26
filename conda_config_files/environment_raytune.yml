@@ -1,0 +1,18 @@
+name: py3.11-timemixer-raytune
+channels:
+  - conda-forge
+dependencies:
+  - python==3.11
+  - pip==24.2
+  - pip:
+    - ConfigSpace==0.6.1
+    - hpbandster==0.7.4
+    - numpy==1.24.4
+    - pandas==2.2.2
+    - torch==2.4.0
+    - scikit-learn==1.5.1
+    - ray[train,tune]==2.34.0
+    - matplotlib==3.9.2
+    - hyperopt==0.2.7
+    - sktime==0.32.1
+    - scipy==1.14.0

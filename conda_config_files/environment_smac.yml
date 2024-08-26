@@ -1,0 +1,23 @@
+name: py3.10-timemixer-smac
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - gxx_linux-64 
+  - gcc_linux-64 
+  - swig
+  - pip==24.2
+  - pip:
+    - IPython
+    - numpy
+    - pandas
+    - scipy
+    - matplotlib
+    - seaborn
+    - scikit-learn
+    - torch==2.4.0
+    - scikit-learn==1.5.1
+    - smac
+    - sktime==0.32.1
+    - dask==2024.8.1
