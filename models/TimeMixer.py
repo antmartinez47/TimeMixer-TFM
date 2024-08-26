@@ -266,6 +266,18 @@ class Model(nn.Module):
             self.projection = nn.Linear(
                 configs.d_model * configs.seq_len, configs.num_class)
 
+        if self.configs.down_sampling_method == 'max':
+            self.down_pool = torch.nn.MaxPool1d(self.configs.down_sampling_window, return_indices=False)
+        elif self.configs.down_sampling_method == 'avg':
+            self.down_pool = torch.nn.AvgPool1d(self.configs.down_sampling_window)
+        elif self.configs.down_sampling_method == 'conv':
+            padding = 1 if torch.__version__ >= '1.5.0' else 2
+            self.down_pool = nn.Conv1d(in_channels=self.configs.enc_in, out_channels=self.configs.enc_in,
+                                  kernel_size=3, padding=padding,
+                                  stride=self.configs.down_sampling_window,
+                                  padding_mode='circular',
+                                  bias=False)
+
     def out_projection(self, dec_out, i, out_res):
         dec_out = self.projection_layer(dec_out)
         out_res = out_res.permute(0, 2, 1)
@@ -287,19 +299,6 @@ class Model(nn.Module):
             return (out1_list, out2_list)
 
     def __multi_scale_process_inputs(self, x_enc, x_mark_enc):
-        if self.configs.down_sampling_method == 'max':
-            down_pool = torch.nn.MaxPool1d(self.configs.down_sampling_window, return_indices=False)
-        elif self.configs.down_sampling_method == 'avg':
-            down_pool = torch.nn.AvgPool1d(self.configs.down_sampling_window)
-        elif self.configs.down_sampling_method == 'conv':
-            padding = 1 if torch.__version__ >= '1.5.0' else 2
-            down_pool = nn.Conv1d(in_channels=self.configs.enc_in, out_channels=self.configs.enc_in,
-                                  kernel_size=3, padding=padding,
-                                  stride=self.configs.down_sampling_window,
-                                  padding_mode='circular',
-                                  bias=False)
-        else:
-            return x_enc, x_mark_enc
         # B,T,C -> B,C,T
         x_enc = x_enc.permute(0, 2, 1)
 
@@ -312,7 +311,7 @@ class Model(nn.Module):
         x_mark_sampling_list.append(x_mark_enc)
 
         for i in range(self.configs.down_sampling_layers):
-            x_enc_sampling = down_pool(x_enc_ori)
+            x_enc_sampling = self.down_pool(x_enc_ori)
 
             x_enc_sampling_list.append(x_enc_sampling.permute(0, 2, 1))
             x_enc_ori = x_enc_sampling
@@ -339,7 +338,9 @@ class Model(nn.Module):
             else:
                 self.x_mark_dec = self.enc_embedding(None, x_mark_dec)
 
-        x_enc, x_mark_enc = self.__multi_scale_process_inputs(x_enc, x_mark_enc)
+        if self.configs.down_sampling_method in {'avg', 'max', 'conv'}:
+            # Downsample the past observations into M scales
+            x_enc, x_mark_enc = self.__multi_scale_process_inputs(x_enc, x_mark_enc)
 
         x_list = []
         x_mark_list = []
