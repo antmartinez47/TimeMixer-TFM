@@ -16,3 +16,4 @@ dependencies:
     - hyperopt==0.2.7
     - sktime==0.32.1
     - scipy==1.14.0
+    - gdown==5.2.0

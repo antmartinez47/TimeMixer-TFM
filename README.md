@@ -1,3 +1,11 @@
+### Download datasets
+
+```{bash}
+# Inside TimeMixer-TFM repository
+conda activate py3.11-timemixer-raytune
+python3 download_data.py
+```
+
 <div align="center">
   <!-- <h1><b> Time-LLM </b></h1> -->
   <!-- <h2><b> Time-LLM </b></h2> -->
