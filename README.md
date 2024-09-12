@@ -37,11 +37,11 @@ TimeMixer-TFM is built on top of a fork of the official repository. The original
 - `build_summary_imgs.ipynb`: A Jupyter notebook used to create dataframes for comparing default and optimized configurations, and to verify the correct reproduction of the paper’s results.
 - `download_data.py`: Downloads and extracts datasets used in the paper’s benchmarks and TFM experiments.
 - **`plot_tune_results.py`**: Generates plots representing the progress and summary of the HPO experiments.
-- **`smac_softs.py`**: Executes an HPO experiment on SOFTS using the SMAC package.
-- **`train_softs.py`**: Trains a SOFTS model.
-- **`tune_softs.py`**: Runs an HPO experiment on SOFTS using the Ray Tune package.
-- `TimeMixer-ETTh1.sh`: Runs all scripts used to generate the results presented in the TFM, enabling full reproduction of the SOFTS-ETTh2 experiment.
-- `search_space.md`: Explanation of the process of constructing the search space for SOFTS-ETTh2 HPO experiment.
+- **`smac_timemixer.py`**: Executes an HPO experiment on TimeMixer using the SMAC package.
+- **`train_timemixer.py`**: Trains a TimeMixer model.
+- **`tune_timemixer.py`**: Runs an HPO experiment on TimeMixer using the Ray Tune package.
+- `TimeMixer-ETTh1.sh`: Runs all scripts used to generate the results presented in the TFM, enabling full reproduction of the TimeMixer-ETTh1 experiment.
+- `search_space.md`: Explanation of the process of constructing the search space for TimeMixer-ETTh1 HPO experiment.
 
 The files marked in **bold** utilize `argparse`, allowing users to adapt their behavior to specific problems. Furthermore, all functions and modules of these new files are well-documented to help users easily adapt and expand the code for their own use cases.
 
@@ -79,9 +79,9 @@ python3 train_timemixer \
     --patience 0 --delta 0.0 --learning_rate 0.01 --loss MSE --seed 123;
 ```
 
-* Dataset location: ./dataset/ETT-small/ETTh1.csv `--root_path ./dataset/ETT-small/` `--data_path ETTh2.csv`
+* Dataset location: ./dataset/ETT-small/ETTh1.csv `--root_path ./dataset/ETT-small/` `--data_path ETTh1.csv`
 * Type of forecasting: M (Multivariate) `--features M`
-* Checkpoints directory: ./checkpoints/baseline/ETTh2_96_192 `--save_dir ./checkpoints/baseline/ETTh1_96_192`
+* Checkpoints directory: ./checkpoints/baseline/ETTh1_96_192 `--save_dir ./checkpoints/baseline/ETTh1_96_192`
 * Num timesteps input window (lookback length): 96 `--seq_len 96`
 * Num timesteps output window (horizon length): 192 `--pred_len 192`
 * Num input channels encoder (the number of input timeseries): 7 `--enc_in 7`
@@ -128,7 +128,7 @@ python3 smac_timemixer \
 ```
 * Search Algorithm: SMAC3 (defined by script)
 * Configuration of the search algorithm: `--smac_min_budget 1` `--smac_eta 3` `--smac_incumbent_selection "highest_budget"` `--smac_n_init_configs 150`
-* Checkpoints and logs save directory: ./checkpoints/hptunning/smac/ETTh1_96_192 `--smac_storage_path ./checkpoints/hptunning/smac` `--smac_experiment_name ETTh2_96_192`
+* Checkpoints and logs save directory: ./checkpoints/hptunning/smac/ETTh1_96_192 `--smac_storage_path ./checkpoints/hptunning/smac` `--smac_experiment_name ETTh1_96_192`
 * Maximum number of configurations: 1500 (training stops after reaching this value) `--smac_n_trials 1500`
 * Stopping conditions:
   * Global condition: Tuning stops after reaching 14400 seconds (6 hours) `smac_time_budget_s 14400`
@@ -162,7 +162,7 @@ The script `TimeMixer-ETTh1` contains all the instructions required to obtain th
 
 
 ![baseline](tfm_imgs/baseline.png)
-**Figure 2**: Error metrics of TimeMixer on the ETTh1, ETTh2, ETTm1, ETTm2 and Weather datasets. The source code was built on top of the official TimeMixer official implementation, with modifications aimed at improving efficiency and flexibility. Hyperparameters (including the random seed) were set according to the values specified in the TimeMixer paper to reproduce the reported results.
+**Figure 2**: Error metrics of TimeMixer on the ETTh1, ETTh1, ETTm1, ETTm2 and Weather datasets. The source code was built on top of the official TimeMixer official implementation, with modifications aimed at improving efficiency and flexibility. Hyperparameters (including the random seed) were set according to the values specified in the TimeMixer paper to reproduce the reported results.
 
 ![evolution](tfm_imgs/time_vs_cost/summary.png)
 **Figure 3**: Evolution of each hyperparameter tuning session conducted on TimeMixer's hyperparameters with ETTh1 dataset. The horizontal axis represents wall clock time in seconds and the number of configurations evaluated, while the vertical axis represents the objective cost of the tuning session, in this case, the best validation loss observed across the entire learning curve (seed=123)
