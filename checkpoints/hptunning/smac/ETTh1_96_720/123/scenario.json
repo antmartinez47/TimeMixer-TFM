@@ -1,0 +1,181 @@
+{
+    "name": "ETTh1_96_720",
+    "deterministic": false,
+    "objectives": "cost",
+    "crash_cost": Infinity,
+    "termination_cost_threshold": Infinity,
+    "walltime_limit": 14400,
+    "cputime_limit": Infinity,
+    "trial_walltime_limit": 100,
+    "trial_memory_limit": null,
+    "n_trials": 1500,
+    "use_default_config": false,
+    "instances": null,
+    "instance_features": null,
+    "min_budget": 1,
+    "max_budget": 8,
+    "seed": 123,
+    "n_workers": 1,
+    "_meta": {
+        "facade": {
+            "name": "MultiFidelityFacade"
+        },
+        "runner": {
+            "name": "TargetFunctionRunner",
+            "code": "b't\\x00\\xa0\\x01\\xa1\\x00}\\x03t\\x02\\xa0\\x03|\\x03j\\x03\\xa1\\x01\\x01\\x00t\\x04\\xa0\\x05|\\x03j\\x03\\xa1\\x01\\x01\\x00t\\x04j\\x06\\xa0\\x05|\\x03j\\x03\\xa1\\x01\\x01\\x00t\\x04j\\x06\\xa0\\x07|\\x03j\\x03\\xa1\\x01\\x01\\x00t\\x08j\\x02\\xa0\\x03|\\x03j\\x03\\xa1\\x01\\x01\\x00t\\t|\\x00\\x83\\x01}\\x00t\\nj\\x0b\\xa0\\x0ct\\nj\\x0b\\xa0\\x0c|\\x03j\\r|\\x03j\\x0ed\\x01\\xa1\\x03\\xa1\\x01}\\x04t\\nj\\x0b\\xa0\\x0f|\\x04\\xa1\\x01s@i\\x00}\\x05n\\x1at\\x10|\\x04d\\x02\\x83\\x02\\x8f\\r}\\x06t\\x11\\xa0\\x12|\\x06\\xa1\\x01}\\x05W\\x00d\\x00\\x04\\x00\\x04\\x00\\x83\\x03\\x01\\x00n\\x081\\x00sUw\\x01\\x01\\x00\\x01\\x00\\x01\\x00Y\\x00\\x01\\x00t\\x11\\xa0\\x13|\\x00\\xa1\\x01}\\x07|\\x07|\\x05v\\x01rkt\\x14|\\x05\\x83\\x01d\\x03\\x17\\x00|\\x05|\\x07<\\x00t\\x10|\\x04d\\x04\\x83\\x02\\x8f\\x10}\\x06t\\x11j\\x15|\\x05|\\x06d\\x05d\\x06\\x8d\\x03\\x01\\x00W\\x00d\\x00\\x04\\x00\\x04\\x00\\x83\\x03\\x01\\x00n\\x081\\x00s\\x83w\\x01\\x01\\x00\\x01\\x00\\x01\\x00Y\\x00\\x01\\x00|\\x05|\\x07\\x19\\x00}\\x08t\\nj\\x0b\\xa0\\x0c|\\x03j\\r|\\x03j\\x0ed\\x07d\\x08|\\x08\\x9b\\x00\\x9d\\x02\\xa1\\x04}\\tt\\nj\\x0b\\xa0\\x16|\\t\\xa1\\x01s\\xa5t\\n\\xa0\\x17|\\t\\xa1\\x01\\x01\\x00d\\t|\\x00v\\x00r\\xb8t\\x18|\\x00d\\t\\x19\\x00|\\x00d\\n\\x19\\x00\\x14\\x00\\x83\\x01|\\x00d\\x0b<\\x00|\\x00d\\t=\\x00t\\x19|\\x00\\x83\\x01\\x01\\x00t\\x1a|\\x03\\x83\\x01}\\x03|\\x03\\xa0\\x1b|\\x00\\xa1\\x01\\x01\\x00t\\x1cj\\x1ddBi\\x00|\\x03\\xa4\\x01\\x8e\\x01}\\x03t\\x04j\\x06\\xa0\\x1e\\xa1\\x00r\\xd7|\\x03j\\x1fr\\xd7d\\x0cn\\x01d\\r|\\x03_\\x1f|\\x03j\\x1fr\\xf7t |\\x03j!\\x83\\x01t\\nj\"d\\x0e<\\x00t\\x04\\xa0#d\\x0f\\xa0$|\\x03j!\\xa1\\x01\\xa1\\x01}\\nt\\x19d\\x10\\xa0$|\\x03j!\\xa1\\x01\\x83\\x01\\x01\\x00n\\tt\\x04\\xa0#d\\x11\\xa1\\x01}\\nt\\x19d\\x12\\x83\\x01\\x01\\x00t%|\\x03j&\\x19\\x00\\xa0\\'|\\x03\\xa1\\x01\\xa0(\\xa1\\x00}\\x0b|\\x03j)\\x90\\x01r\\x1b|\\x03j\\x1f\\x90\\x01r\\x1bt\\x04j*j+|\\x0b|\\x03j,d\\x13\\x8d\\x02}\\x0b|\\x0b\\xa0-|\\n\\xa1\\x01}\\x0bt.|\\x03d\\x14d\\x15\\x8d\\x02\\\\\\x02}\\x0c}\\rt.|\\x03d\\x16d\\x15\\x8d\\x02\\\\\\x02}\\x0e}\\x0ft/\\xa0/\\xa1\\x00}\\x10t\\x14|\\r\\x83\\x01}\\x11t0d\\x00|\\x03j1d\\x0cd\\x0cd\\x17\\x8d\\x04}\\x12|\\x03j2d\\x18k\\x04\\x90\\x01rPt3|\\x03j2|\\x03j1d\\x0cd\\x19\\x8d\\x03}\\x13t4|\\x03|\\x0b\\x83\\x02}\\x14t5|\\x03\\x83\\x01}\\x15t6j7|\\x14|\\x11|\\x03j8|\\x03j9|\\x03j:d\\x1a\\x8d\\x05}\\x16|\\x03j;\\x90\\x01rpt\\x04j\\x06j<\\xa0=\\xa1\\x00}\\x17t\\nj\\x0b\\xa0\\x0c|\\td\\x1b\\xa1\\x02}\\x18t\\nj\\x0b\\xa0\\x0f|\\x18\\xa1\\x01\\x90\\x01r\\xc5t\\x19d\\x1c\\x83\\x01\\x01\\x00t\\x04\\xa0\\x12|\\x18\\xa1\\x01}\\x19|\\x0b\\xa0>|\\x19d\\x1d\\x19\\x00\\xa1\\x01\\x01\\x00|\\x14\\xa0>|\\x19d\\x1e\\x19\\x00\\xa1\\x01\\x01\\x00|\\x16\\xa0>|\\x19d\\x1f\\x19\\x00\\xa1\\x01\\x01\\x00|\\x19d \\x19\\x00|\\x12_?|\\x03j2d\\x18k\\x04\\x90\\x01r\\xb6|\\x19d!\\x19\\x00|\\x13_@|\\x19d \\x19\\x00|\\x13_?|\\x19d\"\\x19\\x00|\\x13_A|\\x19d#\\x19\\x00d\\x03\\x17\\x00}\\x1a|\\x19d$\\x19\\x00}\\x1b|\\x19d%\\x19\\x00}\\x1cn\\x0cd\\x18}\\x1ag\\x00g\\x00g\\x00g\\x00d&\\x9c\\x04}\\x1bt\\x08jB}\\x1c|\\x02d\\x00u\\x01\\x90\\x01r\\xe0|\\x02d\\x18k\\x04\\x90\\x01r\\xe0tC|\\x02\\x83\\x01|\\x03_9t\\x19d\\'\\x83\\x01\\x01\\x00t\\x19d(|\\x02\\x83\\x02\\x01\\x00t\\x19d)|\\x1a\\x83\\x02\\x01\\x00t\\x19d*|\\x03j9\\x83\\x02\\x01\\x00tD|\\x1a|\\x03j9\\x83\\x02D\\x00\\x90\\x02](}\\x1dd\\x18}\\x1eg\\x00}\\x1f|\\x0b\\xa0E\\xa1\\x00\\x01\\x00t/\\xa0/\\xa1\\x00} tF|\\r\\x83\\x01D\\x00\\x90\\x01]r\\\\\\x02}!\\\\\\x04}\"}#}$}%|\\x1ed\\x037\\x00}\\x1e|\\x14\\xa0G\\xa1\\x00\\x01\\x00|\"\\xa0(\\xa1\\x00\\xa0-|\\n\\xa1\\x01}\"|#\\xa0(\\xa1\\x00\\xa0-|\\n\\xa1\\x01}#|$\\xa0(\\xa1\\x00\\xa0-|\\n\\xa1\\x01}$|%\\xa0(\\xa1\\x00\\xa0-|\\n\\xa1\\x01}%d+|\\x03jHk\\x02\\x90\\x02sFd,|\\x03jHk\\x02\\x90\\x02rJd\\x00}$d\\x00}%|\\x03jId\\x18k\\x02\\x90\\x02r\\x7ft\\x04\\xa0J|#d\\x00d\\x00\\x85\\x02|\\x03jK\\x0b\\x00d\\x00\\x85\\x02d\\x00d\\x00\\x85\\x02f\\x03\\x19\\x00\\xa1\\x01\\xa0(\\xa1\\x00}&t\\x04jL|#d\\x00d\\x00\\x85\\x02d\\x00|\\x03jM\\x85\\x02d\\x00d\\x00\\x85\\x02f\\x03\\x19\\x00|&g\\x02d\\x03d-\\x8d\\x02\\xa0(\\xa1\\x00\\xa0-|\\n\\xa1\\x01}&n\\x02d\\x00}&|\\x03j;\\x90\\x02r\\xe9t\\x04j\\x06j<\\xa0N\\xa1\\x00\\x8fT\\x01\\x00|\\x03jO\\x90\\x02r\\x9a|\\x0b|\"|$|&|%\\x83\\x04d\\x18\\x19\\x00}\\'n\\x07|\\x0b|\"|$|&|%\\x83\\x04}\\'|\\x03jPd.k\\x02\\x90\\x02r\\xa9d/n\\x01d\\x18}(|\\'d\\x00d\\x00\\x85\\x02|\\x03jK\\x0b\\x00d\\x00\\x85\\x02|(d\\x00\\x85\\x02f\\x03\\x19\\x00}\\'|#d\\x00d\\x00\\x85\\x02|\\x03jK\\x0b\\x00d\\x00\\x85\\x02|(d\\x00\\x85\\x02f\\x03\\x19\\x00\\xa0-|\\n\\xa1\\x01}#|\\x15|\\'|#\\x83\\x02})|\\x1f\\xa0Q|)\\xa0R\\xa1\\x00\\xa1\\x01\\x01\\x00W\\x00d\\x00\\x04\\x00\\x04\\x00\\x83\\x03\\x01\\x00n\\t1\\x00\\x90\\x02s\\xe3w\\x01\\x01\\x00\\x01\\x00\\x01\\x00Y\\x00\\x01\\x00n+|\\x03jO\\x90\\x02r\\xf7|\\x0b|\"|$|&|%\\x83\\x04d\\x18\\x19\\x00}\\'n\\x07|\\x0b|\"|$|&|%\\x83\\x04}\\'|\\x03jPd.k\\x02\\x90\\x03r\\x06d/n\\x01d\\x18}(|\\x15|\\'|#\\x83\\x02})|\\x1f\\xa0Q|)\\xa0R\\xa1\\x00\\xa1\\x01\\x01\\x00|!d\\x03\\x17\\x00d0\\x16\\x00d\\x18k\\x02\\x90\\x03rMt\\x19d1\\xa0$|!d\\x03\\x17\\x00|\\x1dd\\x03\\x17\\x00|)\\xa0R\\xa1\\x00\\xa1\\x03\\x83\\x01\\x01\\x00t/\\xa0/\\xa1\\x00|\\x10\\x18\\x00|\\x1e\\x1b\\x00}*|*|\\x03j9|\\x1d\\x18\\x00|\\x11\\x14\\x00|!\\x18\\x00\\x14\\x00}+t\\x19d2\\xa0$|*|+\\xa1\\x02\\x83\\x01\\x01\\x00d\\x18}\\x1et/\\xa0/\\xa1\\x00}\\x10|\\x03j;\\x90\\x03rb|\\x17\\xa0S|)\\xa1\\x01\\xa0T\\xa1\\x00\\x01\\x00|\\x17\\xa0U|\\x14\\xa1\\x01\\x01\\x00|\\x17\\xa0\\x1b\\xa1\\x00\\x01\\x00n\\x08|)\\xa0T\\xa1\\x00\\x01\\x00|\\x14\\xa0U\\xa1\\x00\\x01\\x00|\\x03jVd3k\\x02\\x90\\x03r\\x7ftW|\\x14|\\x16|\\x1dd\\x03\\x17\\x00|\\x03d\\rd4\\x8d\\x05\\x01\\x00|\\x16\\xa0U\\xa1\\x00\\x01\\x00\\x90\\x02q\\rt/\\xa0/\\xa1\\x00| \\x18\\x00} t\\x08\\xa0X|\\x1f\\xa1\\x01}\\x1ftY|\\x03|\\x0b|\\x0e|\\x0f|\\x15|\\n\\x83\\x06},|\\x1bd#\\x19\\x00\\xa0Q|\\x1dd\\x03\\x17\\x00\\xa1\\x01\\x01\\x00|\\x1bd5\\x19\\x00\\xa0Q|\\x1f\\xa1\\x01\\x01\\x00|\\x1bd6\\x19\\x00\\xa0Q|,\\xa1\\x01\\x01\\x00|\\x1bd7\\x19\\x00\\xa0Q| \\xa1\\x01\\x01\\x00tZj[|\\x1btDt\\x14|\\x1bd#\\x19\\x00\\x83\\x01\\x83\\x01d8\\x8d\\x02}-|\\x03jVd3k\\x03\\x90\\x03r\\xd2tW|\\x14|\\x16|\\x1dd\\x03\\x17\\x00|\\x03d\\x0cd4\\x8d\\x05\\x01\\x00n\\x0bt\\x19d9\\xa0$|\\x16\\xa0\\\\\\xa1\\x00d\\x18\\x19\\x00\\xa1\\x01\\x83\\x01\\x01\\x00|\\x03j2d\\x18k\\x04\\x90\\x03r\\xe7|\\x13|,\\x83\\x01\\x01\\x00|,|\\x1ck\\x00\\x90\\x03r\\xee|,}\\x1ct\\nj\\x0b\\xa0\\x0c|\\td:\\xa1\\x02}.|\\x12|,|\\x0b|.\\x83\\x03\\x01\\x00t\\x19d;\\xa0$|\\x1dd\\x03\\x17\\x00| \\xa1\\x02\\x83\\x01\\x01\\x00t\\x19d<\\xa0$|\\x1dd\\x03\\x17\\x00|\\x11|\\x1f|,|\\x1c\\xa1\\x05\\x83\\x01\\x01\\x00|\\x03j2d\\x18k\\x04\\x90\\x04r\"|\\x13jA\\x90\\x04r\"t\\x19d=\\x83\\x01\\x01\\x00\\x01\\x00n\\x02\\x90\\x01q\\xfa|\\x03j9|\\x1a\\x18\\x00d\\x18k\\x04\\x90\\x04rmtZj[|\\x1btDt\\x14|\\x1bd#\\x19\\x00\\x83\\x01\\x83\\x01d8\\x8d\\x02}-t\\nj\\x0b\\xa0\\x0c|\\td>\\xa1\\x02}/|-\\xa0]|/\\xa1\\x01\\x01\\x00|\\x03|\\x1d|\\x1c|\\x1b|\\x12j?|\\x0b\\xa0^\\xa1\\x00|\\x14\\xa0^\\xa1\\x00|\\x16\\xa0^\\xa1\\x00d?\\x9c\\x08}0|\\x03j2d\\x18k\\x04\\x90\\x04rg|0\\xa0\\x1b|\\x13j@|\\x13jAd@\\x9c\\x02\\xa1\\x01\\x01\\x00t\\x04\\xa0_|0|\\x18\\xa1\\x02\\x01\\x00t\\x19\\x83\\x00\\x01\\x00t\\x19dA|\\x1c\\x83\\x02\\x01\\x00t\\x19\\x83\\x00\\x01\\x00|\\x1cS\\x00'"
+        },
+        "model": {
+            "name": "RandomForest",
+            "types": [
+                3,
+                4,
+                7,
+                2,
+                2,
+                0,
+                4,
+                0,
+                6
+            ],
+            "bounds": [
+                [
+                    3,
+                    NaN
+                ],
+                [
+                    4,
+                    NaN
+                ],
+                [
+                    7,
+                    NaN
+                ],
+                [
+                    2,
+                    NaN
+                ],
+                [
+                    2,
+                    NaN
+                ],
+                [
+                    0.0,
+                    1.0
+                ],
+                [
+                    4,
+                    NaN
+                ],
+                [
+                    0,
+                    1.0
+                ],
+                [
+                    6,
+                    NaN
+                ]
+            ],
+            "pca_components": 7,
+            "n_trees": 10,
+            "n_points_per_tree": -1,
+            "ratio_features": 1.0,
+            "min_samples_split": 2,
+            "min_samples_leaf": 1,
+            "max_depth": 1048576,
+            "eps_purity": 1e-08,
+            "max_nodes": 1048576,
+            "bootstrapping": true
+        },
+        "acquisition_maximizer": {
+            "name": "LocalAndSortedRandomSearch",
+            "acquisition_function": {
+                "name": "EI",
+                "xi": 0.0,
+                "log": true
+            },
+            "challengers": 10000,
+            "seed": 123,
+            "random_search": {
+                "name": "RandomSearch",
+                "acquisition_function": {
+                    "name": "EI",
+                    "xi": 0.0,
+                    "log": true
+                },
+                "challengers": 5000,
+                "seed": 123
+            },
+            "local_search": {
+                "name": "LocalSearch",
+                "acquisition_function": {
+                    "name": "EI",
+                    "xi": 0.0,
+                    "log": true
+                },
+                "challengers": 5000,
+                "seed": 123,
+                "max_steps": null,
+                "n_steps_plateau_walk": 10,
+                "vectorization_min_obtain": 2,
+                "vectorization_max_obtain": 64
+            }
+        },
+        "acquisition_function": {
+            "name": "EI",
+            "xi": 0.0,
+            "log": true
+        },
+        "intensifier": {
+            "name": "Hyperband",
+            "max_incumbents": 10,
+            "seed": 123,
+            "eta": 3,
+            "instance_seed_order": "shuffle_once",
+            "incumbent_selection": "highest_budget"
+        },
+        "initial_design": {
+            "name": "RandomInitialDesign",
+            "n_configs": 150,
+            "n_configs_per_hyperparameter": 10,
+            "additional_configs": [
+                {
+                    "alpha_d_ff": 2,
+                    "batch_size": 128,
+                    "d_model": 16,
+                    "decomp_method": "moving_avg",
+                    "down_sampling_method": "avg",
+                    "dropout": 0.1,
+                    "e_layers": 2,
+                    "learning_rate": 0.01,
+                    "moving_avg": 25
+                }
+            ],
+            "seed": 123
+        },
+        "random_design": {
+            "name": "ProbabilityRandomDesign",
+            "seed": 123,
+            "probability": 0.2
+        },
+        "runhistory_encoder": {
+            "name": "RunHistoryLogScaledEncoder",
+            "considered_states": [
+                1,
+                2,
+                4
+            ],
+            "lower_budget_states": [],
+            "scale_percentage": 5,
+            "seed": 123
+        },
+        "multi_objective_algorithm": null,
+        "config_selector": {
+            "name": "ConfigSelector",
+            "retrain_after": 8,
+            "retries": 16,
+            "min_trials": 1
+        },
+        "version": "2.2.0"
+    },
+    "output_directory": "checkpoints/hptunning/smac/ETTh1_96_720/123"
+}

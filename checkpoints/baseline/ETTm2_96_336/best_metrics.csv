@@ -1,0 +1,2 @@
+,train_mse,train_mae,val_mse,val_mae,test_mse,test_mae,elapsed_time,vram_usage_gb
+0,0.40465266,0.34761068,0.2175528,0.32087836,0.30154407,0.34375826,311.0888886451721,1.12109375
