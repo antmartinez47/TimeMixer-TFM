@@ -547,14 +547,10 @@ if __name__ == "__main__":
         
         # Load metrics df
         metrics_path = os.path.join(checkpoint_dir, "metrics.csv")
-        if os.path.exists(metrics_path):
-            metrics_df = pd.read_csv(metrics_path)
-            idx_min = np.argmin(metrics_df["valid_loss"])
-            train_loss = metrics_df["train_loss"][idx_min]
-            valid_loss = metrics_df["valid_loss"][idx_min]
-        else:
-            train_loss = None
-            valid_loss = None
+        metrics_df = pd.read_csv(metrics_path)
+        idx_min = np.argmin(metrics_df["valid_loss"])
+        train_loss = metrics_df["train_loss"][idx_min]
+        valid_loss = metrics_df["valid_loss"][idx_min]
 
         results_dict["id"].append(_config_id)
         results_dict["seed"].append(seed)
