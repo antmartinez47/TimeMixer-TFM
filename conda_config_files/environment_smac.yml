@@ -7,11 +7,11 @@ dependencies:
   - gxx_linux-64=14.1.0
   - gcc_linux-64=14.1.0
   - swig=4.2.1
-  - pip=24.2
+  - pip==24.2
   - pip:
     - numpy==1.26.4
     - pandas==2.2.2
-    - scipy==1.14.1
+    - scipy==1.14.0
     - matplotlib==3.9.2
     - seaborn==0.13.2
     - scikit-learn==1.5.1
