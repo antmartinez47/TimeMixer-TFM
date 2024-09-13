@@ -143,7 +143,7 @@ python3 smac_timemixer \
   * Series decomposition method (*decomp_method*): categorical distribution with values [*moving_avg*, *dft_decomp*] 
     * If sampled method is *moving_avg* another hyperparameter named *moving_avg* must be sampled from a categorical distribution with values [15,25,35,55,75] (i.e *moving_avg* exists conditionally on *decomp_method*)
   * Number of PDM blocks (encoder layers): categorical distribution with values [1, 2, 3, 4]
-  * Dropout rate: Normal distribution with min=0.5, max=0.15, mean=0.1, std=0.025
+  * Dropout rate: A Normal distribution with mean=0.1 and std=0.025 truncated to the range [0.5, 0.15]
 * Random Seed (acts as initial seed for both the global tunning process and the local config evaluation process): 123 `seed 123`
 
 This command tunes TimeMixer's hyperparameters by using the Hyperopt TPE search algorithm. The script allows for specifying key factors related to the HPO experiment configuration like the search space, the number of samples, resource allocation (GPU and CPU), and a time budget for tuning, enabling efficient exploration of various model configurations. 
