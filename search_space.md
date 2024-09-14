@@ -9,7 +9,7 @@ The goal is to develop a hyperparameter tuning pipeline aimed at improving the r
 * Search Algorithm
 * Scheduler (Optional)
 
-The chosen objective function, in line with common practices in hyperparameter tuning literature for Deep Neural Networks, is the best validation loss after a certain number of epochs. The training set, validation set, input size, and output size are all consistent with the settings specified in the TimeMixer paper (obtained from the official GitHub repository linked to the paper). The reason for reporting the best validation loss, rather than the current validation loss, is that it reflects the peak performance of the evaluated configuration throughout the entire learning process, assuming that the validation dataset distribution aligns (approximately) with the test dataset distribution. If this assumption is invalid, we should consider more robust objective functions, such as those derived from iterative resampling methods like cross-validation.
+The chosen objective function, in line with common practices in hyperparameter tuning literature for Deep Neural Networks, is the best validation loss after a certain number of epochs. The training set, validation set, input size, and output size are all consistent with the settings specified in the TimeMixer paper (obtained from the official GitHub repository linked to the paper). The reason for reporting the best validation loss, rather than the current validation loss, is that it reflects the peak performance of the evaluated configuration throughout the entire learning process, assuming that the validation dataset distribution aligns (approximately) with the test dataset distribution. If this assumption is invalid, we should consider more robust objective functions, such as those derived from iterative resampling methods like cross-validation. The chosen HPO algorithms are: random search, tpe, bohb (uses hyperband as scheduler) and smac (uses hyperband as scheduler), as explained in the thesis.
 
 To construct the search space, we must first identify the complete list of hyperparameters, select those relevant to our experiment, and assign a probability distribution to each in order to sample them during the hyperparameter optimization process. 
 
@@ -18,6 +18,22 @@ TimeMixer provides two settings for the experiments carried out: a unified hyper
 The list of most relevant hyperparameters, as provided by the official TimeMixer source code, is presented below. These hyperparameters are divided into two categories: global hyperparameters and model-specific hyperparameters. Global hyperparameters are common to most neural network training architectures (at least in a supervised learning context), such as optimizer parameters, batch size, learning rate scheduler type, and the patience of the early stopping callback. Model-specific hyperparameters, on the other hand, pertain to the architecture of the TimeMixer model itself, and tuning them requires estimating their effect on model performance (at least approximately). Each of the most relevant hyperparameters from the official TimeMixer implementation is analyzed, and a probabilistic distribution is proposed for each one to define the sampling process. 
 
 Probabilistic search spaces, which contain hyperparameters defined by probability distributions, are more expressive and tend to yield better results. They also allow for the specification of conditional dependencies between hyperparameters. However, one must carefully balance complexity with runtime, as more complex search spaces are harder to explore and thus require greater computational resources (e.g., time, distributed systems).
+
+- [Global Hyperparameters](#global-hyperparameters)
+   - [Optimizer](#optimizer)
+   - [Learning Rate](#learning-rate)
+   - [Loss Function](#loss-function)
+   - [Batch Size](#batch-size)
+   - [Training Epochs](#training-epochs)
+- [Model-specific Hyperparameters](#model-specific-hyperparameters)
+   - [down_sampling_method](#down_sampling_method)
+   - [down_sampling_layers](#down_sampling_layers)
+   - [down_sampling_window](#down_sampling_window)
+   - [d_model](#d_model)
+   - [d_ff](#d_ff)
+   - [decomp_method](#decomp_method)
+   - [e_layers](#e_layers)
+   - [dropout](#dropout)
 
 ## **Global Hyperparameters**
 
@@ -49,7 +65,9 @@ Since this experiment focuses primarily on model hyperparameters, and Adam is ty
 
 The initial learning rate for the Adam optimizer will be tuned following common practices. These common practices and standard methodologies also explain the choice of Adam optimizer in the TimeMixer paper.
 
-### **Learning Rate and Learning Rate Schedulers**
+TimeMixer paper (page 14): *All the experiments use the ADAM (2015) optimizer with the default hyperparameter configuration for ($\beta_1$,$\beta_2$) as (0.9, 0.999)*
+
+### **Learning Rate**
 
 The learning rate is one of the most critical hyperparameters in the optimization process when training deep neural networks (DNNs). It determines the step size at which the optimizer updates the model's weights during each iteration, significantly influencing the model's convergence, stability, and overall performance.
 
@@ -83,6 +101,8 @@ learning_rate = loguniform(min=1e-5, max=1.2e-2)
 This distribution differs slightly from the one utilized in the searched hyperparameter setting (a uniform distribution from 1e-5 to 5e-2). Change is made to avoid high learning rates that could lead to unstable learning curves and to sample logarithmically (i.e., using a log-uniform distribution). This intuitions were confirmed with random-search-based experiments where the learning rate upper bound was contained in the inteval [1e-2, 5e-2].
 
 The log-uniform distribution helps improve the coverage of the sampling interval when it spans several orders of magnitude. Its minimum and maximum values are derived after initial testing with random-search-based HPO routines and the value utilized by the authors of SOFTS paper.
+
+Quote from TimeMixer paper (page 13): *We set the initial learning rate as 10−2 or 10−3 and used the ADAM optimizer (Kingma & Ba, 2015) with L2 loss for model optimization. And the batch size was set to be 8 between 128. By default, TimeMixer contains 2 Past Decomposable Mixing blocks.*
 
 Regarding the learning rate scheduler, the configurations in the TimeMixer paper do not include one. Therefore, to avoid increasing the complexity of the search space, we will not tune this parameter. The primary focus of this experiment is on model-specific hyperparameters, as this approach offers more valuable insights due to its novelty and the limited number of similar experiments available (actually, the only formal hyperparmaeter tunning process conducted over TimeMixer architectures is presented in TimeMixer paper).
 
@@ -134,6 +154,7 @@ Several studies provide insights into how different loss functions affect time s
 
 In TimeMixer paper, MSE is used for training, while both MSE and MAE are employed for evaluation and benchmarking. To ensure a fair comparison between optimized and default results, we will maintain MSE as the loss function. While optimizing the loss function for a specific objective metric could be explored, this is uncommon in practice. The primary focus of this experiment is on model-specific hyperparameters.
 
+
 ### **Batch Size**: 
 
 The effect of batch size when training deep neural networks for time series forecasting is crucial and has been studied extensively in various contexts. Below, some well-known effects of the batch size in the training of DNNs are listed:
@@ -170,7 +191,7 @@ batch_size = categorical(values=[16, 32, 64, 128, 256])
 Several researchers have suggested that batch sizes should be kept as low as possible, typically around 32 samples, which justifies the lower values in the distribution above. The inclusion of higher values is due to TimeMixer's default setting and the fact that larger batch sizes increase resource consumption and may lead to unstable training, as they can introduce more complex optimization landscapes.
 
 
-### **Number of epochs and early stopping callback**
+### **Training Epochs**
 
 The number of training epochs plays a critical role in determining the performance of deep neural networks for time series forecasting, including multivariate forecasting. Below, some well-known effects of the number of training epochs in the training of DNNs are listed:
 
@@ -224,7 +245,7 @@ The experiments (detailed in Table 19 of TimeMixer paper) show that while the 1D
 down_sampling_method = categorical(values=['avg', 'conv'])
 ```
 
-Max pooling is excluded because the authors did not consider it relevant in their experiments, and its omission helps to reduce the complexity of the search space.
+Max pooling is excluded because the authors did not consider it relevant in their experiments, and a pooling technique is already being considered as candidate.
 
 ### **`down_sampling_layers`** (M in the paper)
 
@@ -285,15 +306,15 @@ alpha = categorical(values=[2, 3, 4])
 
 Specifies which decomposition method into trend and seasonal components should be applied within each PDM block.
 The available options are:
-* `moving_avg` Uses a moving average technique for decomposition, handled by the series_decomp function. This technique was utilized in the Autoformer arquitecture (05/2022). When sampled, another hyperparameter can be defined: `moving_avg`, which determines the window size for the moving average, controlling how smooth the resulting trend and seasonal components are when decomposing the time series. A larger `moving_avg` value results in a smoother trend, while a smaller value gives more weight to shorter-term fluctuations (defaults to 25, no information provided in TimeMixer paper).
-* `dft_decomp` Uses a Discrete Fourier Transform (DFT) for decomposition, implemented in the DFT_series_decomp class and proposed by the autors of TimeMixer. When sampled, another hyperparameter can be defined: `top_k`, which specifies how many of the top frequency components should be kept when performing the DFT. The rest are filtered out as noise. The logic focuses on selecting the top_k most significant frequencies, which are considered to represent the primary seasonal patterns in the data. The other frequencies are set to zero to isolate the trend component (defaults to 5, no information provided in TimeMixer paper).
+* `moving_avg` Uses a moving average technique for decomposition, handled by the series_decomp function. This technique was utilized in the Autoformer arquitecture. When sampled, another hyperparameter can be defined: `moving_avg`, which determines the window size for the moving average, controlling how smooth the resulting trend and seasonal components are when decomposing the time series. A larger `moving_avg` value results in a smoother trend, while a smaller value gives more weight to shorter-term fluctuations (defaults to 25, no information provided in TimeMixer paper).
+* `dft_decomp` Uses a Discrete Fourier Transform (DFT) for decomposition. When sampled, another hyperparameter can be defined: `top_k`, which specifies how many of the top frequency components should be kept when performing the DFT. The rest are filtered out as noise. The logic focuses on selecting the `top_k` most significant frequencies, which are considered to represent the primary seasonal patterns in the data. The other frequencies are set to zero to isolate the trend component (defaults to 5, no information provided in TimeMixer paper about how this value was set).
 
 From TimeMixer paper (page 20): *As we stated in Section 3.1, we adopt the average pooling to obtain the 
 multiscale series. Here we replace this operation with 1D convolutions. From Table 19, we can find that 
 the complicated1D-convolution-based outperforms average pooling slightly. But considering both performance 
 and efficiency, we eventually use average pooling in TimeMixer.*
 
-Since in TimeMixer paper it is shown that the DFT-based season-trend decomposition slightly outperforms the moving average decomposition, tunning it would possibly produce better results than the opposite at the cost of higher computational complexity. Furthermore, we opt to define both of the conditional hyperparameters mentioned above with the foloowing distributions:
+Since in TimeMixer paper it is shown that the DFT-based season-trend decomposition slightly outperforms the moving average decomposition, tunning it would possibly produce better results than the opposite at the cost of higher computational complexity. Furthermore, we opt to define both of the conditional hyperparameters mentioned above with the folowing categorical distributions:
 
 ```
 decomp_method = categorical(values['moving_avg', 'dft_decomp'])
@@ -301,7 +322,7 @@ moving_avg = categorical(values=[15,25,35,55,75]) (exists iff decomp_method=='mo
 top_k = categorical(values=[5,10,15,20]) (exists iff decomp_method=='dft_decomp')
 ```
 
-Where its values are based on common sense, default value and computational constraints. However initial testing revealed that some (high) values of top_k are incompatible with lower values of d_model and d_ff, raising erros during configuration evaluatuion, and thus it has been excluded from the final experiment.
+Where its values are based on common sense, default value and computational constraints. However initial testing revealed that some (high) values of top_k are incompatible with other (lower) values of d_model and d_ff, raising erros during configuration evaluation, and thus it has been excluded from the final experiment, leaving only moving_avg as example of conditional hyperparameter in the current search space:
 
 ```
 decomp_method = categorical(values['moving_avg', 'dft_decomp'])
@@ -331,7 +352,7 @@ For the searched hyperparameter setting, the authors propose the following distr
 e_layers = categorical(values=[1,2,3,4,5])
 ```
 
-Which will be adopted for the current experiment by lowering the upper bound, since it will provide a reasonalbe candidate based on runtime complexity.
+Which will be adopted for the current experiment by lowering the upper bound, since it will provide a more reasonalbe candidate for scenarios with low computational resources.
 
 ```
 e_layers = categorical(values=[1,2,3,4])
@@ -342,8 +363,7 @@ e_layers = categorical(values=[1,2,3,4])
 This hyperparameter determines the probability of dropping neurons (dropout_rate) for the dropout layers in the TimeMixer model. Dropout is a regularization technique used to prevent overfitting during training. It works by randomly setting a fraction of the neurons to zero during each forward pass, which helps the model become less dependent on any particular neuron and improves generalization.
 
 In TimeMixer paper, authors did not specify the use of regularization techniques. However, by inspecting the 
-code we can conclude that dropout is applied by default for the unified setting over ETTh1 dataset with a 
-dropout rate of 0.1.
+code we can conclude that dropout is applied by default with a dropout rate of 0.1
 
 Since dropout represent the most popular mechanism for fighting overfitting during neural network training 
 and it has been demonstrated that can improve performance in complex and noisy environments (such as the 
@@ -354,11 +374,7 @@ is specified as follows:
 dropout = truncated_norm(min=0.05, max=0.15, mean=0.1, std=0.025)
 ```
 
-The choice of the normal distribution centered over the default value is because the default value represent a good starting point, and 
-uniform distribution could lead to suboptimal effects or even no effects (values closer to 0 will have the same probability than 
-other values, but if sampled dropout will be negigible). The truncation of the distribution contributes to the efficiency of the tunning process, where values that may produce non informative evaluations are omitted.
-
-
+The normal distribution centered around the default value is chosen because the default value represents a strong starting point. A uniform distribution, on the other hand, could lead to suboptimal or even ineffective outcomes (since values closer to 0 would have the same probability as other values, making dropout negligible if sampled). Truncating the distribution improves the efficiency of the tuning process by omitting values that could result in non-informative evaluations.
 
 
 
